@@ -24,10 +24,10 @@ export default function NavCard({ type, href }: CardProps) {
 
   return (
     <Link href={href}>
-      <div className=' bg-gray-200 rounded-3xl hover:bg-green-700'>
-        <div className='flex flex-col items-center gap-1 hover:gap-3 transition-all duration-200 justify-between w-20'>
+      <div className='group bg-gray-200 rounded-3xl hover:bg-green-700'>
+        <div className='flex flex-col items-center gap-1 hover:gap-3 p-5 transition-all duration-300 justify-between w-20'>
           {icons[type]}
-          <p className=''>{type}</p>
+          <p className='group-hover:text-gray-300'>{type}</p>
         </div>
       </div>
     </Link>

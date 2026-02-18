@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Roboto } from "next/font/google";
 import ThemeRegistry from "./ThemeRegistry";
+import AuthProvider from "@/context/AuthContext";
+import Providers from "./Providers";
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -22,11 +24,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={roboto.className}>
       <body>
-        <div className="bg-gray-100 h-screen p-1">
+        <AuthProvider>
           <ThemeRegistry>
-            {children}
+            <Providers>
+              <div className="bg-gray-200 min-h-screen p-1">
+                {children}
+              </div>
+            </Providers>
           </ThemeRegistry>
-        </div>
+        </AuthProvider>
       </body>
     </html>
   );
