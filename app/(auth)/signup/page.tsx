@@ -7,7 +7,7 @@ import { TextField, Button } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import {Alert} from "@mui/material";
 import { useState } from "react";
-import { collection, addDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 type UserFieldsType = {
@@ -19,9 +19,9 @@ type UserFieldsType = {
   dateCreated: Date;
 }
 
-async function addUserDoc(userFields: UserFieldsType) {
+async function addUserDoc(userFields: UserFieldsType, userId: string) {
   try {
-    const docRef = await addDoc(collection(db, "users"), {
+    const docRef = await setDoc(doc(db, "users", userId), {
       ...userFields
     })
   }
@@ -63,7 +63,7 @@ export default function Signup() {
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      addUserDoc({ email, firstName, lastName, birthdate, phone, dateCreated: new Date()});
+      addUserDoc({ email, firstName, lastName, birthdate, phone, dateCreated: new Date()}, userCredential.user.uid);
       router.push('/dashboard');
       setLoading(false)
     } catch (error) {

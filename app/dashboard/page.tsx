@@ -26,14 +26,14 @@ export default function Dashboard() {
     return unsubscribe;
   }, [])
 
-  function getUserName(user: User) {
-    if(!user) return "Error"
+  function getUserName(user: User | null) {
+    if(user === null) return "";
     return user.displayName || user.email;
   }
 
   return (
     <>
-      <div className="px-2 py-1 mb-2 border-2 border-solid w-fit rounded-xl border-green-500">{currentUser ? "Active:": "..."} {currentUser?.email}</div>
+      <div className="px-2 py-1 mb-2 border-2 border-solid w-fit rounded-xl border-green-500">{currentUser ? "Active:": "..."} {getUserName(currentUser)}</div>
       <div className="flex flex-col items-center">
         <div className="flex gap-3 justify-center px-3 py-5 rounded-3xl w-2xl">
           <NavCard type="Profile" href="/profile" />
