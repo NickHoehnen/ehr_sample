@@ -9,17 +9,11 @@ import {Alert} from "@mui/material";
 import { useState } from "react";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { UserFields } from "@/app/types/user";
 
-type UserFieldsType = {
-  email: string;
-  birthdate: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  dateCreated: Date;
-}
 
-async function addUserDoc(userFields: UserFieldsType, userId: string) {
+
+async function addUserDoc(userFields: UserFields, userId: string) {
   try {
     const docRef = await setDoc(doc(db, "users", userId), {
       ...userFields
@@ -63,7 +57,8 @@ export default function Signup() {
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      addUserDoc({ email, firstName, lastName, birthdate, phone, dateCreated: new Date()}, userCredential.user.uid);
+      const userUid = userCredential.user.uid;
+      addUserDoc({ id: userUid, email, firstName, lastName, birthdate, phone, dateCreated: new Date()}, userUid);
       router.push('/dashboard');
       setLoading(false)
     } catch (error) {
