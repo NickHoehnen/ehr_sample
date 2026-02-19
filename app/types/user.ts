@@ -7,7 +7,6 @@ export interface UserFields {
   lastName: string;
   phone: string;
   dateCreated: Date;
-  trainerId: string;
   role: 'client' | 'admin';
   id: string;
 }

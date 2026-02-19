@@ -6,4 +6,5 @@ export interface ClientFields {
   age: number;
   phone: string;
   userId: string;
+  trainerId: string;
 }

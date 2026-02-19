@@ -58,7 +58,7 @@ export default function Signup() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const userUid = userCredential.user.uid;
-      addUserDoc({ id: userUid, email, firstName, lastName, birthdate, phone, dateCreated: new Date()}, userUid);
+      addUserDoc({ id: userUid, email, firstName, lastName, birthdate, phone, dateCreated: new Date(), role: 'client'}, userUid);
       router.push('/dashboard');
       setLoading(false)
     } catch (error) {

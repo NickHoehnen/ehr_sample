@@ -25,7 +25,7 @@ export default function Clients() {
     if (!user) return;
     
     // TODO: Ideally, you should filter this by the logged-in user (e.g., trainerId)
-    const q = query(collection(db, "users"), where("trainerId", "==", user.uid));
+    const q = query(collection(db, "clients"), where("trainerId", "==", user.uid));
     
     try {
         const snapshot = await getDocs(q)
@@ -48,7 +48,7 @@ export default function Clients() {
     if(!confirm("Are you sure you want to delete this client?")) return;
 
     try {
-        await deleteDoc(doc(db, "users", id));
+        await deleteDoc(doc(db, "clients", id));
         // Optimistically update UI (remove from list immediately)
         setClients(prev => prev.filter(c => c.userId !== id));
     } catch (error) {
