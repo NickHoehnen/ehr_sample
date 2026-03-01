@@ -1,6 +1,6 @@
 'use client'
 
-import NavCard from "../components/NavCard"
+import NavCard from "../../components/NavCard"
 import Link from "next/link"
 import { onAuthStateChanged, User } from "firebase/auth"
 import { useEffect, useState } from "react"
@@ -29,7 +29,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="px-2 py-1 mb-2 border-2 border-solid w-fit rounded-xl border-green-500">{user ? "Active:": "..."} {displayName}</div>
+      <div className="px-2 py-1 mb-2 border-2 border-solid w-fit rounded-xl border-green-500 cursor-default">{user ? "Active:": "..."} {displayName}</div>
       <div className="flex flex-col items-center">
         <div className="flex gap-3 justify-center px-3 py-5 rounded-3xl w-2xl">
           <NavCard type="Profile" href="/profile" />

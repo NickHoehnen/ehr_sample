@@ -1,6 +1,6 @@
 'use client'
 
-import { createUserWithEmailAndPassword, updateProfile, User } from "firebase/auth"
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile, User } from "firebase/auth"
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import { TextField, Button } from "@mui/material";
@@ -56,10 +56,14 @@ export default function Signup() {
     }
 
     try {
+      // Create the new user and send the verification email
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await sendEmailVerification(userCredential.user);
+
+      // Add a user doc that matches the new user's info
       const userUid = userCredential.user.uid;
       addUserDoc({ id: userUid, email, firstName, lastName, birthdate, phone, dateCreated: new Date(), role: 'client'}, userUid);
-      router.push('/dashboard');
+      router.push('/dashboard'); // Route to Dashboard
       setLoading(false)
     } catch (error) {
       if(error instanceof Error) {
