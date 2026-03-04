@@ -21,20 +21,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+// layout.tsx
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={roboto.className}>
-      <meta name="apple-mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-      <body>
+    <html lang="en" className={`${roboto.className} bg-gray-200`}> 
+      {/* Adding it to html helps with the 'top' overscroll area */}
+      <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      </head>
+      <body className="bg-gray-200"> 
         <AuthProvider>
           <ThemeRegistry>
             <Providers>
-              <div className="bg-gray-200 min-h-screen p-1">
+              {/* Removed the extra div wrapper's background to avoid double-nesting issues */}
+              <div className="min-h-screen p-1">
                 {children}
               </div>
             </Providers>

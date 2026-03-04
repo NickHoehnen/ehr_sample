@@ -159,7 +159,7 @@ export default function ScheduleCalendar() {
       </Box>
 
       {/* Days of Week */}
-      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 1, mb: 1 }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 1, mb: 1, color: 'white' }}>
         {daysOfWeek.map((day) => (
           <Typography key={day} align="center" fontWeight="bold" color="text.secondary">
             {day}

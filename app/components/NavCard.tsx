@@ -4,10 +4,11 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import { ReactElement, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from '@mui/material/styles';
 import { Typography } from '@mui/material';
+import { usePathname } from 'next/navigation';
 
 // Restricting type to exact strings prevents accidental typos when using the component
 type CardProps = {
@@ -16,20 +17,28 @@ type CardProps = {
   active: boolean;
 };
 
-export default function NavCard({ type, href }: CardProps) {
+export default function NavCard({ type, href, active }: CardProps) {
+  const [isActive, setIsActive] = useState(false);
   const theme = useTheme();
   const primaryColor = theme.palette.primary.main;
+  const pathname = usePathname();
+  const thisPathDisplayed = pathname === href;
   
-  // State handles both mouse hover and keyboard focus
-  const [isActive, setIsActive] = useState(false);
+  let bgColor = "";
+  if(active) {
+    bgColor = theme.palette.background.paper;
+  }
+  bgColor = isActive ? primaryColor : theme.palette.background.paper;
+  let contentColor = isActive ? '#ffffff' : primaryColor;
+  let textColor = isActive ? '#ffffff' : theme.palette.text.primary;
 
-  // Dynamic colors ensuring perfect contrast
-  const bgColor = isActive ? primaryColor : theme.palette.background.paper;
-  const contentColor = isActive ? '#ffffff' : primaryColor;
-  const textColor = isActive ? '#ffffff' : theme.palette.text.primary;
+  if(thisPathDisplayed) if(!isActive) setIsActive(true);
 
-  // Icon styles dynamically adjust based on state
-  const iconStyle = { 
+  useEffect(() => {
+    if(pathname !== href) setIsActive(false)
+  }, [pathname]);
+
+  const iconStyle = {
     fontSize: 44, 
     color: contentColor, 
     transition: 'color 0.3s ease' 

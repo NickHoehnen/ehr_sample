@@ -2,10 +2,11 @@
 
 import { signInWithEmailAndPassword, sendEmailVerification } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
-import { TextField, Button, Alert } from '@mui/material'
+import { TextField, Button, Alert, Typography } from '@mui/material'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { getFirebaseAuthMessage } from '@/lib/firebaseErrors'
+import Link from 'next/link'
 
 export default function Login() {
   const router = useRouter()
@@ -43,17 +44,16 @@ export default function Login() {
         formData.password
       )
 
-      if (!userCredential.user.emailVerified) {
-        await sendEmailVerification(userCredential.user);
-        setError('Please verify your email. A verification link was sent.')
-        return
-      }
+      // if (!userCredential.user.emailVerified) {
+      //   await sendEmailVerification(userCredential.user);
+      //   setError('Please verify your email. A verification link was sent.')
+      //   return
+      // }
 
-      router.push('/dashboard')
+      router.push('/dashboard');
     } catch (err) {
       setError(getFirebaseAuthMessage(err))
     } finally {
-      setLoading(false)
     }
   }
 
@@ -67,6 +67,7 @@ export default function Login() {
         variant="filled"
         value={formData.email}
         onChange={handleChange}
+        disabled={loading}
         required
       />
 
@@ -77,6 +78,7 @@ export default function Login() {
         variant="filled"
         value={formData.password}
         onChange={handleChange}
+        disabled={loading}
         required
       />
 
@@ -84,6 +86,11 @@ export default function Login() {
         {loading ? 'Logging in...' : 'Login'}
       </Button>
 
+      <div className='flex items-center gap-2'>
+        <Typography variant='body1'>Don't have an account?</Typography>
+        <Link href="/signup" className='text-center'><Button size='small'>Create new account</Button></Link>
+      </div>
+      
       {error && (
         <Alert severity="warning">
           <span className="font-medium">{error}</span>

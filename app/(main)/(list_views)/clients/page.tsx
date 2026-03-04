@@ -274,16 +274,16 @@ export default function Clients() {
             <DialogContent dividers className="border-gray-100 dark:border-gray-800">
               {/* Replaced MUI Grid with responsive Tailwind grid for cleaner code */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <TextField name="fNameInp" label="First Name" variant="outlined" error={!!errors.fNameInp} helperText={errors?.fNameInp} fullWidth disabled={isSubmitting} />
-                <TextField name="lNameInp" label="Last Name" variant="outlined" error={!!errors.lNameInp} helperText={errors?.lNameInp} fullWidth disabled={isSubmitting} />
-                <TextField name="phone" label="Phone" variant="outlined" error={!!errors.phone} helperText={errors?.phone} fullWidth disabled={isSubmitting} />
-                <TextField name="age" label="Age" type="number" variant="outlined" error={!!errors.age} helperText={errors?.age} fullWidth disabled={isSubmitting} />
-                <TextField name="streetAddress" label="Street Address" variant="outlined" fullWidth disabled={isSubmitting} className="sm:col-span-2" />
-                <TextField name="city" label="City" variant="outlined" fullWidth disabled={isSubmitting} />
-                <div className="grid grid-cols-2 gap-4">
-                  <TextField name="state" label="State" variant="outlined" fullWidth disabled={isSubmitting} />
-                  <TextField name="zip" label="Zip" variant="outlined" fullWidth disabled={isSubmitting} />
-                </div>
+              <TextField name="fNameInp" label="First Name" variant="filled" error={!!errors.fNameInp} helperText={errors?.fNameInp} fullWidth disabled={isSubmitting} />
+              <TextField name="lNameInp" label="Last Name" variant="filled" error={!!errors.lNameInp} helperText={errors?.lNameInp} fullWidth disabled={isSubmitting} />
+              <TextField name="phone" label="Phone" variant="filled" error={!!errors.phone} helperText={errors?.phone} fullWidth disabled={isSubmitting} />
+              <TextField name="age" label="Age" type="number" variant="filled" error={!!errors.age} helperText={errors?.age} fullWidth disabled={isSubmitting} />
+              <TextField name="streetAddress" label="Street Address" variant="filled" fullWidth disabled={isSubmitting} className="sm:col-span-2" />
+              <TextField name="city" label="City" variant="filled" fullWidth disabled={isSubmitting} />
+              <div className="grid grid-cols-2 gap-4">
+                <TextField name="state" label="State" variant="filled" fullWidth disabled={isSubmitting} />
+                <TextField name="zip" label="Zip" variant="filled" fullWidth disabled={isSubmitting} />
+              </div>
               </div>
             </DialogContent>
             <DialogActions sx={{ p: 3, pt: 2 }}>

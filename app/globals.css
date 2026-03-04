@@ -1,11 +1,11 @@
 /* ------------------------------------------------------------
    Tailwind Core (v4 Syntax)
-   ------------------------------------------------------------ */
+------------------------------------------------------------ */
 @import "tailwindcss";
 
 /* ------------------------------------------------------------
    Root Variables (light/dark theme + accents)
-   ------------------------------------------------------------ */
+------------------------------------------------------------ */
 :root {
   --background: #d9d9d9;
   --foreground: #171717;
@@ -27,9 +27,10 @@
 }
 
 /* ------------------------------------------------------------
-   Base Body & Typography
-   ------------------------------------------------------------ */
+   Base Layer
+------------------------------------------------------------ */
 @layer base {
+  html,
   body {
     background: var(--background);
     color: var(--foreground);
@@ -37,6 +38,8 @@
     -webkit-font-smoothing: antialiased;
     margin: 0;
     padding: 0;
+    overscroll-behavior: none;
+    min-height: 100%;
   }
 
   button {
@@ -50,7 +53,7 @@
     color: var(--foreground);
     border-radius: 0.5rem;
     padding: 0.5rem 0.75rem;
-    border: 1px solid #d1d5db; /* light gray */
+    border: 1px solid #d1d5db;
     outline: none;
     font-size: 1rem;
     width: 100%;
@@ -67,30 +70,26 @@
 
 /* ------------------------------------------------------------
    Component Layer
-   ------------------------------------------------------------ */
+------------------------------------------------------------ */
 @layer components {
-  /* Pressable: subtle mobile feedback for any element */
   .pressable {
     @apply transition duration-75 ease-linear active:scale-[0.98] active:opacity-95 cursor-pointer;
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Card: reusable UI container */
   .card {
-    @apply bg-white rounded-xl shadow-md p-4 transition hover:shadow-lg;
+    @apply rounded-xl shadow-md p-4 transition hover:shadow-lg;
     background: var(--card-bg);
     box-shadow: var(--card-shadow);
   }
 
-  /* Pressable Card: expanded utilities to avoid circular dependency errors */
   .pressable-card {
-    @apply bg-white rounded-xl shadow-md p-4 transition hover:shadow-lg duration-150 ease-linear active:scale-[0.97] active:opacity-95 cursor-pointer;
+    @apply rounded-xl shadow-md p-4 transition hover:shadow-lg duration-150 ease-linear active:scale-[0.97] active:opacity-95 cursor-pointer;
     background: var(--card-bg);
     box-shadow: var(--card-shadow);
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Skeleton Loader: subtle placeholder for loading content */
   .skeleton {
     @apply bg-gray-300 rounded-md animate-pulse;
     min-height: 1rem;

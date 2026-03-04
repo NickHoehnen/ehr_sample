@@ -6,13 +6,14 @@ import {
 } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import { auth, db } from '@/lib/firebase'
-import { TextField, Button, Alert } from '@mui/material'
+import { TextField, Button, Alert, Typography } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useState } from 'react'
 import { doc, setDoc } from 'firebase/firestore'
 import { UserFields } from '@/app/types/user'
 import { getFirebaseAuthMessage } from '@/lib/firebaseErrors'
 import dayjs, { Dayjs } from 'dayjs'
+import Link from 'next/link'
 
 type FormData = {
   email: string
@@ -193,9 +194,11 @@ export default function Signup() {
           className='bg-[rgb(195,195,195)]'
         />
 
-        <Button type="submit" variant="contained" disabled={loading}>
+        <Button type="submit" variant="contained" size='large' disabled={loading}>
           {loading ? 'Signing up...' : 'Sign Up'}
         </Button>
+        <Link href="/login" className='text-center'><Button size='small'>Login to existing account</Button></Link>
+
 
         {error && (
           <Alert sx={{ scale: 1.05 }} severity="warning">

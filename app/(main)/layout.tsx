@@ -5,13 +5,14 @@ import AuthGuard from "../components/AuthGuard";
 import NavCard from "../components/NavCard";
 import { CircularProgress, Container, Menu, MenuItem, Typography } from "@mui/material";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, userDoc, logout } = useAuth(); // Assuming logout is in context
-  const router = useRouter()
+  const router = useRouter();
+  const pathname = usePathname();
   
-  // 1. Change type to HTMLElement for MUI compatibility
+  // User pill menu
   const [userMenuAnchor, setUserMenuAnchor] = useState<HTMLElement | null>(null);
   const userMenuOpen = Boolean(userMenuAnchor);
 
@@ -72,18 +73,18 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
         </header>
 
         <nav className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:flex lg:flex-wrap lg:justify-center lg:items-center gap-4 lg:gap-6 justify-start w-full">
-          <NavCard type="Dashboard" href="/dashboard" />
-          <NavCard type="Clients" href="/clients" />
-          <NavCard type="Schedule" href="/schedule" />
-          <NavCard type="Profile" href="/profile" />
+          <NavCard type="Dashboard" href="/dashboard" active={pathname === "/dashboard"} />
+          <NavCard type="Clients" href="/clients" active={pathname === "/clients"} />
+          <NavCard type="Schedule" href="/schedule" active={pathname === "/schedule"} />
+          <NavCard type="Profile" href="/profile" active={pathname === "/profile"} />
         </nav>
 
         {/* Page content container */}
-        <main className="grow bg-white dark:bg-gray-900 dark:text-gray-100 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-10 sm:p-6">
+        <main className="grow bg-white dark:bg-gray-900 dark:text-gray-100 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-4 sm:p-6">
           {loading ? (
             <div className="flex justify-center p-12"><CircularProgress /></div>
           ) : (
-            <div>{children}</div>
+            <div className="animate-in fade-in duration-300">{children}</div>
           )}
         </main>
 
