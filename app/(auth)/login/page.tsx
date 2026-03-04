@@ -53,6 +53,7 @@ export default function Login() {
       router.push('/dashboard');
     } catch (err) {
       setError(getFirebaseAuthMessage(err))
+      setLoading(false)
     } finally {
     }
   }

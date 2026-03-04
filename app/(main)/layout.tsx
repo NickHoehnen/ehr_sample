@@ -34,7 +34,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
     <AuthGuard>
       <Container maxWidth="lg" className="py-8 min-h-screen flex flex-col gap-8">
         
-        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-1 px-2">
+        <header className="flex flex-row sm:items-center justify-between gap-4 mb-1 px-2">
           <Typography variant="h4">EHR Sample</Typography>
 
           {/* Status Pill */}
@@ -72,11 +72,11 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
           </Menu>
         </header>
 
-        <nav className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:flex lg:flex-wrap lg:justify-center lg:items-center gap-4 lg:gap-6 justify-start w-full">
-          <NavCard type="Dashboard" href="/dashboard" active={pathname === "/dashboard"} />
-          <NavCard type="Clients" href="/clients" active={pathname === "/clients"} />
-          <NavCard type="Schedule" href="/schedule" active={pathname === "/schedule"} />
-          <NavCard type="Profile" href="/profile" active={pathname === "/profile"} />
+        <nav className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6 w-full">
+          <NavCard type="Dashboard" href="/dashboard" />
+          <NavCard type="Clients" href="/clients" />
+          <NavCard type="Schedule" href="/schedule" />
+          <NavCard type="Profile" href="/profile" />
         </nav>
 
         {/* Page content container */}

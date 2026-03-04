@@ -112,11 +112,11 @@ export default function ScheduleCalendar() {
             gap: 0.5,
             bgcolor:
               new Date().toDateString() === cellDate.toDateString()
-                ? "action.hover"
+                ? "gray.200"
                 : "background.paper",
           }}
         >
-          <Typography variant="body2" color="text.secondary" align="right">
+          <Typography variant="body2" color="inherit" align="right">
             {day}
           </Typography>
           
@@ -130,6 +130,7 @@ export default function ScheduleCalendar() {
                 color: "primary.contrastText",
                 cursor: "pointer",
                 "&:hover": { bgcolor: "primary.main" },
+                overflow: "hidden",
               }}
             >
               <Typography variant="caption" noWrap display="block">
@@ -144,31 +145,33 @@ export default function ScheduleCalendar() {
   };
 
   return (
-    <Box sx={{ width: "100%", maxWidth: 1000, mx: "auto", p: 2 }}>
+    <Box sx={{ width: "100%", maxWidth: 1000, mx: "auto", p: 0 }}>
       {/* Header */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <IconButton onClick={handlePrevMonth}>
+        <IconButton onClick={handlePrevMonth} sx={{ color: "grey.400" }}> {/* <-- Added sx color */}
           <ChevronLeftIcon />
         </IconButton>
+        
         <Typography variant="h5" fontWeight="bold">
           {currentDate.toLocaleString("default", { month: "long" })} {year}
         </Typography>
-        <IconButton onClick={handleNextMonth}>
+        
+        <IconButton onClick={handleNextMonth} sx={{ color: "grey.400" }}> {/* <-- Added sx color */}
           <ChevronRightIcon />
         </IconButton>
       </Box>
 
       {/* Days of Week */}
-      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 1, mb: 1, color: 'white' }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, minmax(0, 1fr))", gap: 1, mb: 1, color: 'white' }}>
         {daysOfWeek.map((day) => (
-          <Typography key={day} align="center" fontWeight="bold" color="text.secondary">
+          <Typography key={day} align="center" fontWeight="bold" color="inherit">
             {day}
           </Typography>
         ))}
       </Box>
 
       {/* Calendar Grid */}
-      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 1 }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, minmax(0, 1fr))", gap: 1 }}>
         {renderCells()}
       </Box>
 

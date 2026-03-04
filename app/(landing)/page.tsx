@@ -29,7 +29,7 @@ export default function AuthHome() {
 
         <Link href="/signup" className="w-full">
           <Button variant="outlined" fullWidth size="large">
-            Sign Up
+            Create an Account
           </Button>
         </Link>
       </Box>

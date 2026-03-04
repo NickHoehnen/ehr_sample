@@ -227,7 +227,7 @@ export default function Clients() {
                       {client.firstName} {client.lastName}
                     </Typography>
                     
-                    <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                    <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                       <Phone sx={{ fontSize: 14 }} />
                       <span>{client.phone}</span>
                     </div>

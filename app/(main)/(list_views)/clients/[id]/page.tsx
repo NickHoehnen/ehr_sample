@@ -5,14 +5,18 @@ import { db } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { ClientFields } from "@/app/types/client";
-import { useParams } from "next/navigation";
-import { Skeleton } from "@mui/material";
+import { useParams, useRouter } from "next/navigation";
+import { IconButton, Skeleton, useTheme } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
+import Link from "next/link";
 
 export default function ClientView() {
   const params = useParams();
   const id = params.id as string;
   const { user, loading } = useAuth();
   const [client, setClient] = useState<ClientFields | null>(null);
+  const router = useRouter();
+  const theme = useTheme();
 
   useEffect(() => {
     if (!loading && user) {
@@ -47,7 +51,8 @@ export default function ClientView() {
 
   return (
     <div className="space-y-8">
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-6">
+      <div className="flex flex-row gap-3 border-b border-gray-200 dark:border-gray-700 pb-4">
+        <IconButton onClick={() => router.back()} color="primary"><ArrowBack /></IconButton>
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
           {client.firstName} {client.lastName}
         </h1>
@@ -77,6 +82,11 @@ export default function ClientView() {
         <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
           <p className="text-sm text-gray-600 dark:text-gray-400 font-semibold">State</p>
           <p className="text-lg text-gray-900 dark:text-white mt-1">{client.state}</p>
+        </div>
+
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 font-semibold">Zip</p>
+          <p className="text-lg text-gray-900 dark:text-white mt-1">{client.zip}</p>
         </div>
       </div>
     </div>
