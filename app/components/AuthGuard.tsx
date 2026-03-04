@@ -23,7 +23,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   }, [ loading, user, router])
 
   if(loading || !user || !user.emailVerified) {
-    return <CircularProgress />
+    return <div className="flex justify-center items-center h-screen"><CircularProgress /></div>
   }
 
   return (

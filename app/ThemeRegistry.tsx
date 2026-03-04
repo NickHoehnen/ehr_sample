@@ -7,13 +7,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 const theme = createTheme({
   palette: {
-    primary: {
-      main: '#305dff',
-    },
-    secondary: {
-      main: '#6889ff',
-    },
-  },
+    primary: { main: '#1976d2' },
+    secondary: { main: '#27aeb0' },
+    error: { main: '#da5454' },
+    warning: { main: '#ed6c02' },
+    info: { main: '#0288d1' },
+    success: { main: '#2e7d32' },
+  }
 });
 
 export default function ThemeRegistry({

@@ -1,0 +1,21 @@
+{
+  "name": "EHR Sample",
+  "short_name": "EHR",
+  "description": "Manage your business",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1b2a",
+  "theme_color": "#1976d2",
+  "icons": [
+    {
+      "src": "/appIcon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

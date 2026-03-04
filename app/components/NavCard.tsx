@@ -1,39 +1,70 @@
-'use client' 
+'use client'
 
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import { ReactElement } from 'react';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import { ReactElement, useState } from 'react';
 import Link from 'next/link';
-import {useTheme} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { Typography } from '@mui/material';
 
+// Restricting type to exact strings prevents accidental typos when using the component
 type CardProps = {
-  type: string;
+  type: 'Clients' | 'Profile' | 'Schedule' | 'Dashboard';
   href: string;
-}
-export default function NavCard({ type, href }: CardProps) {
-  
-  const icons: Record<string, ReactElement> = { 
-    'Clients': <PeopleAltIcon sx={{ fontSize: 50 }} />,
-    'Profile': <AccountBoxIcon sx={{ fontSize: 50 }} />,
-    'Schedule': <CalendarMonthIcon sx={{ fontSize: 50 }} />,
-  }
+  active: boolean;
+};
 
+export default function NavCard({ type, href }: CardProps) {
   const theme = useTheme();
   const primaryColor = theme.palette.primary.main;
+  
+  // State handles both mouse hover and keyboard focus
+  const [isActive, setIsActive] = useState(false);
+
+  // Dynamic colors ensuring perfect contrast
+  const bgColor = isActive ? primaryColor : theme.palette.background.paper;
+  const contentColor = isActive ? '#ffffff' : primaryColor;
+  const textColor = isActive ? '#ffffff' : theme.palette.text.primary;
+
+  // Icon styles dynamically adjust based on state
+  const iconStyle = { 
+    fontSize: 44, 
+    color: contentColor, 
+    transition: 'color 0.3s ease' 
+  };
+
+  const icons: Record<string, ReactElement> = { 
+    'Clients': <PeopleAltIcon sx={iconStyle} />,
+    'Profile': <AccountBoxIcon sx={iconStyle} />,
+    'Schedule': <CalendarMonthIcon sx={iconStyle} />,
+    'Dashboard': <DashboardIcon sx={iconStyle} />,
+  };
 
   return (
-    <Link href={href}>
+    <Link href={href} className="block outline-none">
       <div 
-        className={`group rounded-3xl border-2`}
-        onMouseEnter={e => e.currentTarget.style.backgroundColor = primaryColor}
-        onMouseLeave={e => e.currentTarget.style.backgroundColor = ''}
+        className="group relative flex flex-col items-center justify-center gap-3 p-6 rounded-3xl cursor-pointer border border-gray-100 dark:border-gray-800 transition-all duration-300 ease-out active:scale-95 hover:shadow-xl hover:shadow-primary/20"
+        style={{ backgroundColor: bgColor }}
+        onMouseEnter={() => setIsActive(true)}
+        onMouseLeave={() => setIsActive(false)}
+        onFocus={() => setIsActive(true)}
+        onBlur={() => setIsActive(false)}
       >
-        <div className='flex flex-col items-center gap-1 hover:gap-3 p-5 transition-all duration-200 justify-between w-20'>
+        {/* The icon lifts slightly independently of the card background */}
+        <div className="transition-transform duration-300 ease-out group-hover:-translate-y-1">
           {icons[type]}
-          <p className='group-hover:text-gray-300'>{type}</p>
         </div>
+        
+        <Typography 
+          variant="subtitle1" 
+          fontWeight="600"
+          style={{ color: textColor, transition: 'color 0.3s ease' }}
+        >
+          {type}
+        </Typography>
       </div>
     </Link>
-  )
+  );
 }

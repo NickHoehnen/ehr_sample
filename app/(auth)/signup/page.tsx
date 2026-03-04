@@ -1,97 +1,208 @@
 'use client'
 
-import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile, User } from "firebase/auth"
-import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
-import { TextField, Button } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers";
-import {Alert} from "@mui/material";
-import { useState } from "react";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { UserFields } from "@/app/types/user";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from 'firebase/auth'
+import { useRouter } from 'next/navigation'
+import { auth, db } from '@/lib/firebase'
+import { TextField, Button, Alert } from '@mui/material'
+import { DatePicker } from '@mui/x-date-pickers'
+import { useState } from 'react'
+import { doc, setDoc } from 'firebase/firestore'
+import { UserFields } from '@/app/types/user'
+import { getFirebaseAuthMessage } from '@/lib/firebaseErrors'
+import dayjs, { Dayjs } from 'dayjs'
 
-
+type FormData = {
+  email: string
+  password: string
+  confirmPassword: string
+  firstName: string
+  lastName: string
+  phone: string
+  birthdate: Dayjs | null
+}
 
 async function addUserDoc(userFields: UserFields, userId: string) {
-  try {
-    const docRef = await setDoc(doc(db, "users", userId), {
-      ...userFields
-    })
-  }
-  catch(e) {
-    console.log("Error adding user doc: ", e)
-  }
+  await setDoc(doc(db, 'users', userId), userFields)
 }
 
 export default function Signup() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const router = useRouter()
 
-  async function onSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-    const confirmPassword = formData.get('confirmPassword') as string;
-    const firstName = formData.get('firstName') as string;
-    const lastName = formData.get('lastName') as string;
-    const birthdate = formData.get('birthdate') as string;
-    const phone = formData.get('phone') as string;
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const [formData, setFormData] = useState<FormData>({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    firstName: '',
+    lastName: '',
+    phone: '',
+    birthdate: null,
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError(null)
+
+    const { name, value } = e.target
+
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleBirthdateChange = (date: Dayjs | null) => {
+    setError(null)
+    setFormData(prev => ({
+      ...prev,
+      birthdate: date,
+    }))
+  }
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+
+    const {
+      email,
+      password,
+      confirmPassword,
+      firstName,
+      lastName,
+      phone,
+      birthdate,
+    } = formData
 
     if (!email || !password || !confirmPassword || !firstName || !lastName || !birthdate) {
-      alert('Please fill in all fields');
-      return;
+      setError('Please fill in all required fields.')
+      return
     }
 
-    if(password !== confirmPassword) {
-      alert('Passwords do not match');
-      return;
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.')
+      return
     }
 
     if (password.length < 6) {
-      alert('Password must be at least 6 characters');
-      return;
+      setError('Password must be at least 6 characters.')
+      return
     }
 
     try {
-      // Create the new user and send the verification email
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await sendEmailVerification(userCredential.user);
+      setLoading(true)
 
-      // Add a user doc that matches the new user's info
-      const userUid = userCredential.user.uid;
-      addUserDoc({ id: userUid, email, firstName, lastName, birthdate, phone, dateCreated: new Date(), role: 'client'}, userUid);
-      router.push('/dashboard'); // Route to Dashboard
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password
+      )
+
+      await sendEmailVerification(userCredential.user)
+
+      const userUid = userCredential.user.uid
+
+      await addUserDoc(
+        {
+          id: userUid,
+          email,
+          firstName,
+          lastName,
+          birthdate: birthdate.toISOString(),
+          phone,
+          dateCreated: new Date(),
+          role: 'client',
+        },
+        userUid
+      )
+
+      router.push('/dashboard')
+    } catch (err) {
+      setError(getFirebaseAuthMessage(err))
+    } finally {
       setLoading(false)
-    } catch (error) {
-      if(error instanceof Error) {
-        setError(error)
-        alert('Error creating user: ' + (error instanceof Error ? error.message : 'Unknown error'));
-      }
     }
-  };
+  }
 
   return (
-      <div>
-        <form className="flex flex-col gap-6" onSubmit={onSubmit}>
-          <h1 className="text-2xl mb-3">Sign Up</h1>
-          <TextField name="email" label="Email" variant="filled"></TextField>
-          <TextField name="password" label="Password" type="password" variant="filled"></TextField>
-          <TextField name="confirmPassword" label="Confirm Password" type="password" variant="filled"></TextField>
-          <TextField name="firstName" label="First Name" variant="filled"></TextField>
-          <TextField name="lastName" label="Last Name" variant="filled"></TextField>
-          <TextField name="phone" label="Phone" variant="filled"></TextField>
-          <DatePicker name="birthdate" label="Birthdate" className="bg-[#c5c8cf]"></DatePicker>
-          <Button type="submit" variant="contained" disabled={loading}>{loading ? "Signing up..." : "Done"}</Button>
-        </form>
-          {(error && error instanceof Error) ?
-            <Alert severity="warning">
-              <span className="font-medium">Test</span>
-            </Alert>
-            : ""}
-      </div>
-    
+    <div>
+      <form className="flex flex-col gap-6" onSubmit={onSubmit}>
+        <h1 className="text-2xl mb-1">Sign Up</h1>
+
+        <TextField
+          name="email"
+          label="Email"
+          variant="filled"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+
+        <TextField
+          name="password"
+          label="Password"
+          type="password"
+          variant="filled"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+
+        <TextField
+          name="confirmPassword"
+          label="Confirm Password"
+          type="password"
+          variant="filled"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          required
+        />
+
+        <TextField
+          name="firstName"
+          label="First Name"
+          variant="filled"
+          value={formData.firstName}
+          onChange={handleChange}
+          required
+        />
+
+        <TextField
+          name="lastName"
+          label="Last Name"
+          variant="filled"
+          value={formData.lastName}
+          onChange={handleChange}
+          required
+        />
+
+        <TextField
+          name="phone"
+          label="Phone"
+          variant="filled"
+          value={formData.phone}
+          onChange={handleChange}
+        />
+
+        <DatePicker
+          label="Birthdate"
+          value={formData.birthdate}
+          onChange={handleBirthdateChange}
+          className='bg-[rgb(195,195,195)]'
+        />
+
+        <Button type="submit" variant="contained" disabled={loading}>
+          {loading ? 'Signing up...' : 'Sign Up'}
+        </Button>
+
+        {error && (
+          <Alert sx={{ scale: 1.05 }} severity="warning">
+            <span className="font-medium">{error}</span>
+          </Alert>
+        )}
+      </form>
+    </div>
   )
 }

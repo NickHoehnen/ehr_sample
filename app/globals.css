@@ -1,35 +1,98 @@
+/* ------------------------------------------------------------
+   Tailwind Core (v4 Syntax)
+   ------------------------------------------------------------ */
 @import "tailwindcss";
 
+/* ------------------------------------------------------------
+   Root Variables (light/dark theme + accents)
+   ------------------------------------------------------------ */
 :root {
-  --background: #ffffff;
+  --background: #d9d9d9;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --primary: #0d1b2a; /* hockey navy */
+  --accent: #1f7ed0; /* ice blue */
+  --card-bg: #929292;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --card-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --card-bg: #1c1c1c;
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --card-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.6);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ------------------------------------------------------------
+   Base Body & Typography
+   ------------------------------------------------------------ */
+@layer base {
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  input,
+  textarea,
+  select {
+    background-color: var(--card-bg);
+    color: var(--foreground);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db; /* light gray */
+    outline: none;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(31, 126, 208, 0.3);
+  }
 }
 
-button {
-  cursor: pointer;
-}
+/* ------------------------------------------------------------
+   Component Layer
+   ------------------------------------------------------------ */
+@layer components {
+  /* Pressable: subtle mobile feedback for any element */
+  .pressable {
+    @apply transition duration-75 ease-linear active:scale-[0.98] active:opacity-95 cursor-pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-input {
-  background-color: white;
-  color: black;
+  /* Card: reusable UI container */
+  .card {
+    @apply bg-white rounded-xl shadow-md p-4 transition hover:shadow-lg;
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+  }
+
+  /* Pressable Card: expanded utilities to avoid circular dependency errors */
+  .pressable-card {
+    @apply bg-white rounded-xl shadow-md p-4 transition hover:shadow-lg duration-150 ease-linear active:scale-[0.97] active:opacity-95 cursor-pointer;
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Skeleton Loader: subtle placeholder for loading content */
+  .skeleton {
+    @apply bg-gray-300 rounded-md animate-pulse;
+    min-height: 1rem;
+  }
 }
