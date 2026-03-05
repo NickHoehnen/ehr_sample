@@ -1,15 +1,20 @@
 'use client'
 
-import { useAuth } from "@/context/AuthContext"
-import { CircularProgress, Typography } from "@mui/material";
+import { useAuth } from '@/context/AuthContext'
+import { CircularProgress, Typography } from '@mui/material'
 
 export default function Profile() {
-  const { user, loading, userDoc } = useAuth();
-  const firstName = userDoc?.firstName || '';
-  const lastName = userDoc?.lastName || '';
-  const fullName = `${firstName} ${lastName}`;
+  const { user, loading, userDoc } = useAuth()
+  const firstName = userDoc?.firstName || ''
+  const lastName = userDoc?.lastName || ''
+  const fullName = `${firstName} ${lastName}`
 
-  if(loading || !user || !userDoc) return <div className="flex justify-center"><CircularProgress /></div>
+  if (loading || !user || !userDoc)
+    return (
+      <div className="flex justify-center">
+        <CircularProgress />
+      </div>
+    )
 
   return (
     <div>

@@ -1,31 +1,31 @@
-'use client'
+"use client";
 
-import { createContext, useContext, useEffect, useState } from "react"
-import { onAuthStateChanged, User, signOut } from "firebase/auth"
-import { auth, db } from "@/lib/firebase"
-import { DocumentData, getDoc, doc } from "firebase/firestore"
+import { createContext, useContext, useEffect, useState } from "react";
+import { onAuthStateChanged, User, signOut } from "firebase/auth";
+import { auth, db } from "@/lib/firebase";
+import { DocumentData, getDoc, doc } from "firebase/firestore";
 
 type AuthContextType = {
   user: User | null;
   loading: boolean;
   userDoc: DocumentData | null;
   logout: () => Promise<void>;
-}
+};
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   userDoc: null,
-  logout: async () => {}, 
-})
+  logout: async () => {},
+});
 
 async function getUserDoc(user: User | null) {
-  if(!user) return null;
+  if (!user) return null;
 
-  const docRef = doc(db, 'users', user.uid);
+  const docRef = doc(db, "users", user.uid);
   const docSnap = await getDoc(docRef);
 
-  if(docSnap.exists()) {
+  if (docSnap.exists()) {
     return docSnap.data();
   } else {
     console.log("No user document found");
@@ -33,10 +33,14 @@ async function getUserDoc(user: User | null) {
   }
 }
 
-export default function AuthProvider({ children }: {children: React.ReactNode}) {
+export default function AuthProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [userDoc, setUserDoc] = useState<DocumentData | null>(null)
+  const [userDoc, setUserDoc] = useState<DocumentData | null>(null);
 
   const logout = async () => {
     try {
@@ -58,17 +62,17 @@ export default function AuthProvider({ children }: {children: React.ReactNode}) 
         setUserDoc(null);
       }
       setLoading(false);
-    })
+    });
 
     return unsubscribe;
-  }, [])
+  }, []);
 
   return (
     // 5. Provide the logout function to the rest of the app
     <AuthContext.Provider value={{ user, loading, userDoc, logout }}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export function useAuth() {

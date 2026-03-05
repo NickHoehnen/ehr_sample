@@ -6,9 +6,9 @@ import AuthProvider from "@/context/AuthContext";
 import Providers from "./Providers";
 
 const roboto = Roboto({
-  weight: ['300', '400', '500', '700'],
-  subsets: ['latin'],
-  display: 'swap',
+  weight: ["300", "400", "500", "700"],
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -22,22 +22,27 @@ export const metadata: Metadata = {
 };
 
 // layout.tsx
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" className={`${roboto.className} bg-gray-200`}> 
+    <html lang="en" className={`${roboto.className} bg-gray-200`}>
       {/* Adding it to html helps with the 'top' overscroll area */}
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
       </head>
-      <body className="bg-gray-200"> 
+      <body className="bg-gray-200">
         <AuthProvider>
           <ThemeRegistry>
             <Providers>
               {/* Removed the extra div wrapper's background to avoid double-nesting issues */}
-              <div className="min-h-screen p-1">
-                {children}
-              </div>
+              <div className="min-h-screen">{children}</div>
             </Providers>
           </ThemeRegistry>
         </AuthProvider>

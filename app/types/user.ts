@@ -1,5 +1,3 @@
-
-
 export interface UserFields {
   email: string;
   birthdate: string;
@@ -7,6 +5,6 @@ export interface UserFields {
   lastName: string;
   phone: string;
   dateCreated: Date;
-  role: 'client' | 'admin';
+  role: "client" | "admin";
   id: string;
 }

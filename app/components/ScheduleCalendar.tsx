@@ -26,7 +26,7 @@ interface CalendarEvent {
 
 export default function ScheduleCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  
+
   // Sample initial events
   const [events, setEvents] = useState<CalendarEvent[]>([
     {
@@ -50,7 +50,9 @@ export default function ScheduleCalendar() {
   ]);
 
   // Dialog State
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
+    null,
+  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Calendar Helpers
@@ -79,7 +81,7 @@ export default function ScheduleCalendar() {
   const handleSave = () => {
     if (selectedEvent) {
       setEvents((prev) =>
-        prev.map((e) => (e.id === selectedEvent.id ? selectedEvent : e))
+        prev.map((e) => (e.id === selectedEvent.id ? selectedEvent : e)),
       );
     }
     handleCloseDialog();
@@ -87,7 +89,7 @@ export default function ScheduleCalendar() {
 
   const renderCells = () => {
     const cells = [];
-    
+
     // Empty slots before the 1st of the month
     for (let i = 0; i < firstDayOfMonth; i++) {
       cells.push(<Box key={`empty-${i}`} sx={{ p: 1, minHeight: 100 }} />);
@@ -97,7 +99,7 @@ export default function ScheduleCalendar() {
     for (let day = 1; day <= daysInMonth; day++) {
       const cellDate = new Date(year, month, day);
       const dayEvents = events.filter(
-        (e) => e.date.toDateString() === cellDate.toDateString()
+        (e) => e.date.toDateString() === cellDate.toDateString(),
       );
 
       cells.push(
@@ -119,7 +121,7 @@ export default function ScheduleCalendar() {
           <Typography variant="body2" color="inherit" align="right">
             {day}
           </Typography>
-          
+
           {dayEvents.map((event) => (
             <Paper
               key={event.id}
@@ -138,7 +140,7 @@ export default function ScheduleCalendar() {
               </Typography>
             </Paper>
           ))}
-        </Paper>
+        </Paper>,
       );
     }
     return cells;
@@ -147,44 +149,83 @@ export default function ScheduleCalendar() {
   return (
     <Box sx={{ width: "100%", maxWidth: 1000, mx: "auto", p: 0 }}>
       {/* Header */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <IconButton onClick={handlePrevMonth} sx={{ color: "grey.400" }}> {/* <-- Added sx color */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
+        <IconButton onClick={handlePrevMonth} sx={{ color: "grey.400" }}>
+          {" "}
+          {/* <-- Added sx color */}
           <ChevronLeftIcon />
         </IconButton>
-        
+
         <Typography variant="h5" fontWeight="bold">
           {currentDate.toLocaleString("default", { month: "long" })} {year}
         </Typography>
-        
-        <IconButton onClick={handleNextMonth} sx={{ color: "grey.400" }}> {/* <-- Added sx color */}
+
+        <IconButton onClick={handleNextMonth} sx={{ color: "grey.400" }}>
+          {" "}
+          {/* <-- Added sx color */}
           <ChevronRightIcon />
         </IconButton>
       </Box>
 
       {/* Days of Week */}
-      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, minmax(0, 1fr))", gap: 1, mb: 1, color: 'white' }}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
+          gap: 1,
+          mb: 1,
+          color: "white",
+        }}
+      >
         {daysOfWeek.map((day) => (
-          <Typography key={day} align="center" fontWeight="bold" color="inherit">
+          <Typography
+            key={day}
+            align="center"
+            fontWeight="bold"
+            color="inherit"
+          >
             {day}
           </Typography>
         ))}
       </Box>
 
       {/* Calendar Grid */}
-      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, minmax(0, 1fr))", gap: 1 }}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
+          gap: 1,
+        }}
+      >
         {renderCells()}
       </Box>
 
       {/* Edit Event Dialog */}
-      <Dialog open={isDialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="sm">
+      <Dialog
+        open={isDialogOpen}
+        onClose={handleCloseDialog}
+        fullWidth
+        maxWidth="sm"
+      >
         <DialogTitle>Edit Event</DialogTitle>
-        <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 2 }}>
+        <DialogContent
+          sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 2 }}
+        >
           <TextField
             label="Title"
             fullWidth
             value={selectedEvent?.title || ""}
             onChange={(e) =>
-              setSelectedEvent((prev) => prev ? { ...prev, title: e.target.value } : null)
+              setSelectedEvent((prev) =>
+                prev ? { ...prev, title: e.target.value } : null,
+              )
             }
           />
           <TextField
@@ -194,7 +235,9 @@ export default function ScheduleCalendar() {
             rows={3}
             value={selectedEvent?.description || ""}
             onChange={(e) =>
-              setSelectedEvent((prev) => prev ? { ...prev, description: e.target.value } : null)
+              setSelectedEvent((prev) =>
+                prev ? { ...prev, description: e.target.value } : null,
+              )
             }
           />
           <Typography variant="caption" color="text.secondary">

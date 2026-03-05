@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -43,13 +43,9 @@ export default function VerifyEmail() {
 
   return (
     <Stack spacing={2} alignItems="center">
-      <Typography variant="h4">
-        Please verify your email
-      </Typography>
+      <Typography variant="h4">Please verify your email</Typography>
 
-      <Typography>
-        We've sent you a verification link.
-      </Typography>
+      <Typography>We've sent you a verification link.</Typography>
 
       <LoadingButton
         loading={resending}

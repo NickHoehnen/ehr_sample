@@ -1,59 +1,61 @@
 'use client'
 
-import { useAuth } from "@/context/AuthContext";
-import { db } from "@/lib/firebase";
-import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { ClientFields } from "@/app/types/client";
-import { useParams, useRouter } from "next/navigation";
-import { IconButton, Skeleton, useTheme } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
-import Link from "next/link";
+import { useAuth } from '@/context/AuthContext'
+import { db } from '@/lib/firebase'
+import { useEffect, useState } from 'react'
+import { doc, getDoc } from 'firebase/firestore'
+import { ClientFields } from '@/app/types/client'
+import { useParams, useRouter } from 'next/navigation'
+import { IconButton, Skeleton, useTheme } from '@mui/material'
+import { ArrowBack } from '@mui/icons-material'
 
 export default function ClientView() {
-  const params = useParams();
-  const id = params.id as string;
-  const { user, loading } = useAuth();
-  const [client, setClient] = useState<ClientFields | null>(null);
-  const router = useRouter();
-  const theme = useTheme();
+  const params = useParams()
+  const id = params.id as string
+  const { user, loading } = useAuth()
+  const [client, setClient] = useState<ClientFields | null>(null)
+  const router = useRouter()
+  const theme = useTheme()
 
   useEffect(() => {
     if (!loading && user) {
       const fetchClient = async () => {
-        const docRef = doc(db, "users", user.uid, "clients", id);
-        const snapshot = await getDoc(docRef);
+        const docRef = doc(db, 'users', user.uid, 'clients', id)
+        const snapshot = await getDoc(docRef)
 
         if (snapshot.exists()) {
-          setClient(snapshot.data() as ClientFields);
+          setClient(snapshot.data() as ClientFields)
         } else {
-          setClient(null);
+          setClient(null)
         }
-      };
+      }
 
-      fetchClient();
+      fetchClient()
     }
-  }, [user, loading, id]);
+  }, [user, loading, id])
 
-  if (loading || !client) return (
-    <div className="space-y-4">
-      <Skeleton variant="text" width="40%" height={40} />
-      <div className="space-y-3 pt-4">
-        <Skeleton variant="text" width="60%" />
-        <Skeleton variant="text" width="50%" />
-        <Skeleton variant="text" width="70%" />
-        <Skeleton variant="text" width="55%" />
+  if (loading || !client)
+    return (
+      <div className="space-y-4">
+        <Skeleton variant="text" width="40%" height={40} />
+        <div className="space-y-3 pt-4">
+          <Skeleton variant="text" width="60%" />
+          <Skeleton variant="text" width="50%" />
+          <Skeleton variant="text" width="70%" />
+          <Skeleton variant="text" width="55%" />
+        </div>
       </div>
-    </div>
-  );
+    )
 
-  if (!user) return <div className="text-center text-red-500">Not authorized</div>;
+  if (!user) return <div className="text-center text-red-500">Not authorized</div>
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-row gap-3 border-b border-gray-200 dark:border-gray-700 pb-4">
-        <IconButton onClick={() => router.back()} color="primary"><ArrowBack /></IconButton>
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+    <div className="space-y-7">
+      <div className="flex flex-row items-center justify-between gap-3 border-b border-gray-200 dark:border-gray-700 pb-4">
+        <IconButton onClick={() => router.back()} color="primary" className='pressable'>
+          <ArrowBack sx={{ fontSize: '2rem' }} />
+        </IconButton>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           {client.firstName} {client.lastName}
         </h1>
       </div>
@@ -70,8 +72,12 @@ export default function ClientView() {
         </div>
 
         <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400 font-semibold">Address</p>
-          <p className="text-lg text-gray-900 dark:text-white mt-1">{client.streetAddress}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 font-semibold">
+            Address
+          </p>
+          <p className="text-lg text-gray-900 dark:text-white mt-1">
+            {client.streetAddress}
+          </p>
         </div>
 
         <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
@@ -90,5 +96,5 @@ export default function ClientView() {
         </div>
       </div>
     </div>
-  );
+  )
 }

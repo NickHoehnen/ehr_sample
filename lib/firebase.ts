@@ -10,7 +10,7 @@ const firebaseConfig = {
   storageBucket: "ehr-sample.firebasestorage.app",
   messagingSenderId: "1052879038542",
   appId: "1:1052879038542:web:d0b0a9437198e254f37b1f",
-  measurementId: "G-8MN9KRNQP8"
+  measurementId: "G-8MN9KRNQP8",
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();

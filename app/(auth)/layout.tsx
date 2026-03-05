@@ -3,7 +3,7 @@
 import { Container } from "@mui/material";
 
 export default function AuthLayout({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {
@@ -18,8 +18,8 @@ export default function AuthLayout({
       }}
     >
       <div className="p-5 bg-gray-300 border border-gray-400 rounded-2xl shadow-2xl w-lg">
-      {children}
+        {children}
       </div>
     </Container>
-  )
+  );
 }

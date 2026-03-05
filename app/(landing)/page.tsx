@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { Container, Button, Typography, Box } from "@mui/material";
 import Link from "next/link";
@@ -16,7 +16,7 @@ export default function AuthHome() {
     >
       <Box className="p-8 bg-gray-300 border border-gray-400 rounded-2xl shadow-2xl w-lg flex flex-col gap-6">
         <h1 className="text-2xl mb-1">EHR System</h1>
-        
+
         <Typography variant="body1" className="text-gray-700">
           Welcome. Please login or create an account to continue.
         </Typography>

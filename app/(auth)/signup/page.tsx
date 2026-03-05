@@ -1,71 +1,71 @@
-'use client'
+"use client";
 
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
-} from 'firebase/auth'
-import { useRouter } from 'next/navigation'
-import { auth, db } from '@/lib/firebase'
-import { TextField, Button, Alert, Typography } from '@mui/material'
-import { DatePicker } from '@mui/x-date-pickers'
-import { useState } from 'react'
-import { doc, setDoc } from 'firebase/firestore'
-import { UserFields } from '@/app/types/user'
-import { getFirebaseAuthMessage } from '@/lib/firebaseErrors'
-import dayjs, { Dayjs } from 'dayjs'
-import Link from 'next/link'
+} from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { auth, db } from "@/lib/firebase";
+import { TextField, Button, Alert, Typography } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers";
+import { useState } from "react";
+import { doc, setDoc } from "firebase/firestore";
+import { UserFields } from "@/app/types/user";
+import { getFirebaseAuthMessage } from "@/lib/firebaseErrors";
+import dayjs, { Dayjs } from "dayjs";
+import Link from "next/link";
 
 type FormData = {
-  email: string
-  password: string
-  confirmPassword: string
-  firstName: string
-  lastName: string
-  phone: string
-  birthdate: Dayjs | null
-}
+  email: string;
+  password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  birthdate: Dayjs | null;
+};
 
 async function addUserDoc(userFields: UserFields, userId: string) {
-  await setDoc(doc(db, 'users', userId), userFields)
+  await setDoc(doc(db, "users", userId), userFields);
 }
 
 export default function Signup() {
-  const router = useRouter()
+  const router = useRouter();
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    firstName: '',
-    lastName: '',
-    phone: '',
+    email: "",
+    password: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
+    phone: "",
     birthdate: null,
-  })
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setError(null)
+    setError(null);
 
-    const { name, value } = e.target
+    const { name, value } = e.target;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleBirthdateChange = (date: Dayjs | null) => {
-    setError(null)
-    setFormData(prev => ({
+    setError(null);
+    setFormData((prev) => ({
       ...prev,
       birthdate: date,
-    }))
-  }
+    }));
+  };
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+    e.preventDefault();
 
     const {
       email,
@@ -75,35 +75,42 @@ export default function Signup() {
       lastName,
       phone,
       birthdate,
-    } = formData
+    } = formData;
 
-    if (!email || !password || !confirmPassword || !firstName || !lastName || !birthdate) {
-      setError('Please fill in all required fields.')
-      return
+    if (
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !firstName ||
+      !lastName ||
+      !birthdate
+    ) {
+      setError("Please fill in all required fields.");
+      return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match.')
-      return
+      setError("Passwords do not match.");
+      return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters.')
-      return
+      setError("Password must be at least 6 characters.");
+      return;
     }
 
     try {
-      setLoading(true)
+      setLoading(true);
 
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email.trim(),
-        password
-      )
+        password,
+      );
 
-      await sendEmailVerification(userCredential.user)
+      await sendEmailVerification(userCredential.user);
 
-      const userUid = userCredential.user.uid
+      const userUid = userCredential.user.uid;
 
       await addUserDoc(
         {
@@ -114,16 +121,16 @@ export default function Signup() {
           birthdate: birthdate.toISOString(),
           phone,
           dateCreated: new Date(),
-          role: 'client',
+          role: "client",
         },
-        userUid
-      )
+        userUid,
+      );
 
-      router.push('/dashboard')
+      router.push("/dashboard");
     } catch (err) {
-      setError(getFirebaseAuthMessage(err))
+      setError(getFirebaseAuthMessage(err));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -191,14 +198,20 @@ export default function Signup() {
           label="Birthdate"
           value={formData.birthdate}
           onChange={handleBirthdateChange}
-          className='bg-[rgb(195,195,195)]'
+          className="bg-[rgb(195,195,195)]"
         />
 
-        <Button type="submit" variant="contained" size='large' disabled={loading}>
-          {loading ? 'Signing up...' : 'Sign Up'}
+        <Button
+          type="submit"
+          variant="contained"
+          size="large"
+          disabled={loading}
+        >
+          {loading ? "Signing up..." : "Sign Up"}
         </Button>
-        <Link href="/login" className='text-center'><Button size='small'>Login to existing account</Button></Link>
-
+        <Link href="/login" className="text-center">
+          <Button size="small">Login to existing account</Button>
+        </Link>
 
         {error && (
           <Alert sx={{ scale: 1.05 }} severity="warning">
@@ -207,5 +220,5 @@ export default function Signup() {
         )}
       </form>
     </div>
-  )
+  );
 }

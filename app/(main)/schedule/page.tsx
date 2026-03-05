@@ -1,5 +1,5 @@
-import ScheduleCalendar from "@/app/components/ScheduleCalendar";
-import { Typography } from "@mui/material";
+import ScheduleCalendar from '@/app/components/ScheduleCalendar'
+import { Typography } from '@mui/material'
 
 export default function Schedule() {
   return (

@@ -1,5 +1,3 @@
-
-
 export interface ClientFields {
   id: string;
   firstName: string;

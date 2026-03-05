@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState } from "react";
 import { TextField, Button, Stack, Alert, Box } from "@mui/material";
@@ -19,7 +19,7 @@ export default function QuickForm({ onSuccess, onCancel }: QuickFormProps) {
     email: "",
     phone: "",
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +28,7 @@ export default function QuickForm({ onSuccess, onCancel }: QuickFormProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -57,7 +57,6 @@ export default function QuickForm({ onSuccess, onCancel }: QuickFormProps) {
       // Clear form and notify parent
       setFormData({ firstName: "", lastName: "", email: "", phone: "" });
       onSuccess();
-
     } catch (err: any) {
       console.error("Error adding client:", err);
       setError("Failed to add client. Please try again.");
@@ -104,7 +103,7 @@ export default function QuickForm({ onSuccess, onCancel }: QuickFormProps) {
           type="email"
           value={formData.email}
           onChange={handleChange}
-            variant="filled"
+          variant="filled"
         />
 
         <TextField
@@ -114,22 +113,19 @@ export default function QuickForm({ onSuccess, onCancel }: QuickFormProps) {
           name="phone"
           value={formData.phone}
           onChange={handleChange}
-            variant="filled"
+          variant="filled"
         />
 
-        <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
-          <Button 
-            variant="outlined" 
-            onClick={onCancel} 
-            disabled={loading}
-          >
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="flex-end"
+          sx={{ mt: 3 }}
+        >
+          <Button variant="outlined" onClick={onCancel} disabled={loading}>
             Cancel
           </Button>
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            loading={loading}
-          >
+          <LoadingButton type="submit" variant="contained" loading={loading}>
             Add Client
           </LoadingButton>
         </Stack>
