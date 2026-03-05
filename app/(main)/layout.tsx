@@ -91,7 +91,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
         {/* Main Content Area */}
         <main className="grow flex pt-10 flex-col sm:pt-20 pb-30 sm:pb-0 max-w-7xl mx-auto w-full">
           <div className="grow bg-black dark:bg-gray-900 rounded-2xl  overflow-hidden">
-            {loading ? (
+            {loading || !user ? (
               <div className="flex items-center justify-center min-h-100">
                 <CircularProgress size={32} thickness={5} />
               </div>
