@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { CircularProgress, Menu, MenuItem, Typography, useTheme } from '@mui/material'
+import { Box, CircularProgress, Menu, MenuItem, Typography, useTheme } from '@mui/material'
 
 import { useAuth } from '@/context/AuthContext'
 import AuthGuard from '../components/AuthGuard'
@@ -44,10 +44,10 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
         </nav>
 
         {/* User Status Pill */}
-        <header className="fixed bottom-30 right-4 z-60">
+        <div className="fixed sm:bottom-15 right-4 z-60 ">
           <button
             onClick={handleOpen}
-            className="flex items-center gap-3 px-3 py-1.5 bg-white/80 dark:bg-green-900/10 backdrop-blur-md border border-green-200 dark:border-green-800/50 rounded-full shadow-sm hover:shadow-md transition-all active:scale-95 select-none"
+            className="flex items-center gap-3 px-4 py-2 bg-white/80 dark:bg-green-900/10 backdrop-blur-md border border-green-200 dark:border-green-800/50 rounded-full shadow-sm hover:shadow-md transition-all active:scale-95 select-none"
           >
             <span className="relative flex h-2.5 w-2.5">
               {user && (
@@ -86,25 +86,27 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
               Logout
             </MenuItem>
           </Menu>
-        </header>
+        </div>
 
         {/* Main Content Area */}
-        <main className="grow flex pt-10 flex-col sm:pt-20 pb-30 sm:pb-0 max-w-7xl mx-auto w-full">
+        <main className="grow flex pt-10 flex-col sm:pt-18 pb-30 sm:pb-0 max-w-7xl mx-auto w-full">
           <div className="grow bg-black dark:bg-gray-900 rounded-2xl  overflow-hidden">
             {loading || !user ? (
               <div className="flex items-center justify-center min-h-100">
                 <CircularProgress size={32} thickness={5} />
               </div>
             ) : (
+              // Page title
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 sm:p-6 p-2">
+                {/* Replace the current Typography block with this */}
                 <Typography
                   variant="h4"
                   fontWeight="bold"
-                  className="fixed text-gray-900 dark:text-white w-full top-0 px-2"
+                  className="fixed sm:hidden text-gray-900 dark:text-white w-full top-0 px-2" // Added sm:top-16
                   sx={{ 
                     bgcolor: theme.palette.background.default,
-                    zIndex:'40',
-                    color: theme.palette.secondary.dark
+                    zIndex: '40', // Higher than the nav's 50
+                    color: theme.palette.secondary.light
                   }}
                 >
                   {title}

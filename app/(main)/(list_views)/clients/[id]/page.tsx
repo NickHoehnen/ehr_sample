@@ -36,14 +36,13 @@ export default function ClientView() {
 
   if (loading || !client)
     return (
-      <div className="space-y-4">
-        <Skeleton variant="text" width="40%" height={40} />
-        <div className="space-y-3 pt-4">
-          <Skeleton variant="text" width="60%" />
-          <Skeleton variant="text" width="50%" />
-          <Skeleton variant="text" width="70%" />
-          <Skeleton variant="text" width="55%" />
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Skeleton variant="rounded" width="100%" height={80} sx={{ bgcolor: "grey"}} />
+        <Skeleton variant="rounded" width="100%" height={80} sx={{ bgcolor: "grey"}} />
+        <Skeleton variant="rounded" width="100%" height={80} sx={{ bgcolor: "grey"}} />
+        <Skeleton variant="rounded" width="100%" height={80} sx={{ bgcolor: "grey"}} />
+        <Skeleton variant="rounded" width="100%" height={80} sx={{ bgcolor: "grey"}} />
+        <Skeleton variant="rounded" width="100%" height={80} sx={{ bgcolor: "grey"}} />
       </div>
     )
 
@@ -51,6 +50,7 @@ export default function ClientView() {
 
   return (
     <div className="space-y-7">
+      {/* Header - back arrow, client name */}
       <div className="flex flex-row items-center justify-between gap-3 border-b border-gray-200 dark:border-gray-700 pb-4">
         <IconButton onClick={() => router.back()} color="primary" className='pressable'>
           <ArrowBack sx={{ fontSize: '2rem' }} />
@@ -60,6 +60,7 @@ export default function ClientView() {
         </h1>
       </div>
 
+      {/* Values grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
           <p className="text-sm text-gray-600 dark:text-gray-400 font-semibold">Age</p>

@@ -23,7 +23,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { ClientFields } from '@/app/types/client'
 import { clientConverter } from '@/lib/converters'
 import { useRouter } from 'next/navigation'
-import { Add, Delete, Search, Phone, LocationOn } from '@mui/icons-material'
+import { Add, Delete, Search, Phone, LocationOn, Clear } from '@mui/icons-material'
 import { LoadingButton } from '@mui/lab'
 import Link from 'next/link'
 
@@ -173,7 +173,7 @@ export default function Clients() {
 
   return (
     // Clients page
-    <div className="w-full mx-auto pt-0 sm:pt-10 flex flex-col gap-6">
+    <div className="w-full mx-auto pt-0 sm:pt-13 flex flex-col gap-6">
 
       {/* Search and Action Bar */}
       <Box 
@@ -183,11 +183,10 @@ export default function Clients() {
             xs: theme.palette.background.default,
             sm: 'transparent'
           },
-          // Adding a slight blur effect for mobile looks great
           backdropFilter: { xs: 'blur(8px)', sm: 'none' }
         }}
       >
-        <div className='flex flex-row items-center justify-end gap-3 max-w-7xl mx-auto'>
+        <div className='flex flex-row items-center justify-end gap-2 sm:gap-3 max-w-7xl mx-auto'>
           
           {user && (
             <Avatar 
@@ -195,7 +194,7 @@ export default function Clients() {
                 width: 40, 
                 height: 40, 
                 bgcolor: theme.palette.secondary.main,
-                display: { xs: 'none', md: 'flex' } // Hide on small mobile to save space
+                display: { xs: 'none', md: 'flex' }
               }}
             >
               {user.displayName ? getInitials(user.displayName.split(' ')[0], user.displayName.split(' ')[1] || '') : 'TR'}
@@ -207,20 +206,48 @@ export default function Clients() {
             placeholder="Search clients..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            // Removed "p-10" which was causing massive internal padding
-            className="w-full sm:w-64 bg-white dark:bg-gray-800 shadow-md rounded-lg"
+            // 1. Used flex-1 instead of w-full so it shares space gracefully with the button on mobile
+            className="flex-1 sm:flex-none sm:w-64 bg-white dark:bg-gray-800 shadow-sm rounded-lg"
             slotProps={{
               input: {
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Search className="text-gray-400" />
+                    <Search className="text-gray-500 dark:text-gray-400" />
                   </InputAdornment>
                 ),
+                endAdornment: searchQuery && (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={() => setSearchQuery('')} edge="end">
+                      <Clear fontSize="small" />
+                    </IconButton>
+                  </InputAdornment>
+                )
               },
             }}
             sx={{
-              '& .MuiOutlinedInput-root': { borderRadius: '10px' },
-              '& .MuiInputBase-input': { color: 'inherit' }, 
+              // 3. Fixed the borders by targeting the internal fieldset rather than the wrapper
+              '& .MuiOutlinedInput-root': { 
+                borderRadius: '8px', 
+                '& fieldset': {
+                  borderColor: theme.palette.divider, 
+                  borderWidth: '1px',
+                },
+                '&:hover fieldset': {
+                  borderColor: theme.palette.secondary.main,
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: theme.palette.secondary.dark,
+                  borderWidth: '2px',
+                },
+              },
+              '& .MuiInputBase-input': { 
+                color: 'text.primary',
+              },
+              // 4. Fixed placeholder visibility by forcing contrast and opacity
+              '& .MuiInputBase-input::placeholder': { 
+                color: theme.palette.text.secondary,
+                opacity: 1, 
+              },
             }}
           />
 
@@ -228,10 +255,17 @@ export default function Clients() {
             onClick={() => setDialogState('add')}
             variant="contained"
             disableElevation
-            startIcon={<Add />}
-            className="whitespace-nowrap rounded-lg px-6 py-2 h-[40px] shadow-sm"
+            sx={{
+              // 5. Removed padding on mobile to turn it into a compact icon button
+              minWidth: { xs: '40px', sm: 'auto' }, 
+              px: { xs: 0, sm: 3 }, 
+              height: '40px',
+              borderRadius: '8px'
+            }}
           >
-            Client
+            <Add />
+            {/* 6. Hid the text on small screens to prevent cramming */}
+            <span className="hidden sm:inline-block sm:ml-2">Client</span>
           </Button>
         </div>
       </Box>
@@ -302,7 +336,7 @@ export default function Clients() {
                   {/* Wrapped in a flex-center div */}
                   <IconButton
                     size="small"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400! !hover:text-red-600 m-auto"
+                    className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-gray-400! !hover:text-red-600 m-auto"
                     sx={{
                       '&:hover': {
                         backgroundColor: 'rgba(255, 32, 32, 0.36)', // Tailwind red-50 equivalent

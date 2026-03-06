@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Roboto } from "next/font/google";
 import ThemeRegistry from "./ThemeRegistry";
@@ -17,32 +17,39 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    title: "EHR Sample",
+    statusBarStyle: "black-translucent",
   },
 };
 
-// layout.tsx
+// New way to handle viewports in Next.js
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f9fafb' },
+    { media: '(prefers-color-scheme: dark)', color: '#111827' },
+  ],
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1, // Prevents auto-zoom on input fields in iOS
+  userScalable: false,
+};
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${roboto.className} bg-gray-200`}>
-      {/* Adding it to html helps with the 'top' overscroll area */}
-      <head>
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta
-          name="apple-mobile-web-app-status-bar-style"
-          content="black-translucent"
-        />
-      </head>
-      <body className="bg-gray-200">
+    <html lang="en" className={roboto.className} suppressHydrationWarning>
+      <body className="antialiased">
         <AuthProvider>
           <ThemeRegistry>
+            {/* CssBaseline inside ThemeRegistry will handle 
+                the body background color automatically based on mode */}
             <Providers>
-              {/* Removed the extra div wrapper's background to avoid double-nesting issues */}
-              <div className="min-h-screen">{children}</div>
+              <div className="min-h-screen flex flex-col">
+                {children}
+              </div>
             </Providers>
           </ThemeRegistry>
         </AuthProvider>
@@ -50,4 +57,3 @@ export default function RootLayout({
     </html>
   );
 }
-// ROOT LAYOUT
