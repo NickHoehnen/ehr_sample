@@ -34,9 +34,9 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col">
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center">
         {/* Navigation - Top on Desktop, Bottom on Mobile */}
-        <nav className="fixed bottom-0 sm:top-0 sm:bottom-auto left-0 p-2 pb-6 sm:pb-2 w-full grid grid-cols-4 bg-white dark:bg-gray-900 border-t sm:border-t-0 sm:border-b border-gray-200 dark:border-gray-800 z-50">
+        <nav className="fixed bottom-0 left-auto sm:top-0 sm:bottom-auto lg:w-7xl lg:rounded-b-2xl px-4 pb-5 pt-1 sm:p-0 w-full grid grid-cols-4 bg-transparent dark:bg-gray-900 border-t sm:border-t-0 sm:border-b border-gray-200 dark:border-gray-800 z-50">
           <NavCard type="Dashboard" href="/dashboard" />
           <NavCard type="Clients" href="/clients" />
           <NavCard type="Schedule" href="/schedule" />
@@ -44,10 +44,10 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
         </nav>
 
         {/* User Status Pill */}
-        <div className="fixed sm:bottom-15 right-4 z-60 ">
+        <div className="fixed top-1.5 sm:bottom-10 md:bottom-15 right-4 z-60 ">
           <button
             onClick={handleOpen}
-            className="flex items-center gap-3 px-4 py-2 bg-white/80 dark:bg-green-900/10 backdrop-blur-md border border-green-200 dark:border-green-800/50 rounded-full shadow-sm hover:shadow-md transition-all active:scale-95 select-none"
+            className="flex items-center gap-3 px-3 py-1 bg-white/80 dark:bg-green-900/10 backdrop-blur-md border border-green-200 dark:border-green-800/50 active:dark:border-green-600 rounded-full shadow-sm hover:shadow-md transition-all active:scale-95 select-none"
           >
             <span className="relative flex h-2.5 w-2.5">
               {user && (
@@ -96,13 +96,13 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
                 <CircularProgress size={32} thickness={5} />
               </div>
             ) : (
-              // Page title
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 sm:p-6 p-2">
-                {/* Replace the current Typography block with this */}
+              // Main content
+              <div className="sm:p-6 p-2">
+                {/* Page title */}
                 <Typography
                   variant="h4"
                   fontWeight="bold"
-                  className="fixed sm:hidden text-gray-900 dark:text-white w-full top-0 px-2" // Added sm:top-16
+                  className="fixed top-0 left-0 sm:hidden text-gray-900 dark:text-white w-full px-4 pb-1.5 border-b border-gray-800" // Added sm:top-16
                   sx={{ 
                     bgcolor: theme.palette.background.default,
                     zIndex: '40', // Higher than the nav's 50

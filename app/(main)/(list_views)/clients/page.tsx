@@ -13,7 +13,6 @@ import {
   CircularProgress,
   Typography,
   useTheme,
-  useMediaQuery,
   Avatar,
   InputAdornment,
   Box,
@@ -23,7 +22,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { ClientFields } from '@/app/types/client'
 import { clientConverter } from '@/lib/converters'
 import { useRouter } from 'next/navigation'
-import { Add, Delete, Search, Phone, LocationOn, Clear } from '@mui/icons-material'
+import { Add, Delete, Search, Phone, Clear } from '@mui/icons-material'
 import { LoadingButton } from '@mui/lab'
 import Link from 'next/link'
 
@@ -33,7 +32,6 @@ type FormErrors = {
 
 type DialogState = 'closed' | 'add' | 'delete'
 
-// Helper to generate initials for the Avatar
 const getInitials = (firstName: string, lastName: string) => {
   return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase()
 }
@@ -69,7 +67,6 @@ export default function Clients() {
     return unsub
   }, [loading, user, router])
 
-  // Local Search Filtering
   const filteredClients = useMemo(() => {
     if (!clients) return []
     if (!searchQuery) return clients
@@ -101,7 +98,6 @@ export default function Clients() {
     if (!user) return
 
     setErrors({})
-    // Grab the form data
     const formData = new FormData(e.currentTarget)
     const firstName = (formData.get('fNameInp') as string).trim()
     const lastName = (formData.get('lNameInp') as string).trim()
@@ -112,7 +108,6 @@ export default function Clients() {
     const state = (formData.get('state') as string).trim()
     const zip = formData.get('zip')?.toString() || ''
 
-    // Gather errors into newErrors
     const newErrors: Record<string, string> = {}
 
     if (!firstName) newErrors.fNameInp = 'First name is required'
@@ -122,7 +117,6 @@ export default function Clients() {
     if (!ageStr || isNaN(age) || age <= 0) newErrors.age = 'Valid age required'
     if (!phone || phone.length < 10) newErrors.phone = 'Valid phone required'
 
-    // If there are errors, update state, don't add client
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
       return
@@ -130,11 +124,9 @@ export default function Clients() {
 
     setIsSubmitting(true)
     try {
-      // Create new client ref
       const clientsCollectionRef = collection(db, 'users', user.uid, 'clients')
       const newClientRef = doc(clientsCollectionRef)
 
-      // Assing new client data doc to the new client ref
       const newClientData: ClientFields = {
         id: newClientRef.id,
         firstName,
@@ -156,8 +148,8 @@ export default function Clients() {
     }
   }
 
-  function handleCloseDialog(event?: any, reason?: string) {
-    if (reason === 'backdropClick' && isSubmitting) return
+  function handleCloseDialog() {
+    if (isSubmitting) return
     setDialogState('closed')
     setSelectedClient(null)
     setErrors({})
@@ -172,18 +164,12 @@ export default function Clients() {
   }
 
   return (
-    // Clients page
     <div className="w-full mx-auto pt-0 sm:pt-13 flex flex-col gap-6">
-
-      {/* Search and Action Bar */}
       <Box 
-        className="fixed top-10 sm:top-20 left-0 z-10 p-4 w-full"
+        className="fixed top-15 sm:top-18 px-1 lg:px-[50%] right-0 z-10 w-[70%]"
         sx={{ 
-          bgcolor: {
-            xs: theme.palette.background.default,
-            sm: 'transparent'
-          },
-          backdropFilter: { xs: 'blur(8px)', sm: 'none' }
+          bgcolor: theme.palette.background.default,
+          backdropFilter: { xs: 'none', sm: 'blur(8px)' }
         }}
       >
         <div className='flex flex-row items-center justify-end gap-2 sm:gap-3 max-w-7xl mx-auto'>
@@ -206,13 +192,11 @@ export default function Clients() {
             placeholder="Search clients..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            // 1. Used flex-1 instead of w-full so it shares space gracefully with the button on mobile
-            className="flex-1 sm:flex-none sm:w-64 bg-white dark:bg-gray-800 shadow-sm rounded-lg"
             slotProps={{
               input: {
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Search className="text-gray-500 dark:text-gray-400" />
+                    <Search sx={{ color: 'text.secondary' }} />
                   </InputAdornment>
                 ),
                 endAdornment: searchQuery && (
@@ -225,25 +209,23 @@ export default function Clients() {
               },
             }}
             sx={{
-              // 3. Fixed the borders by targeting the internal fieldset rather than the wrapper
+              width: { xs: '100%', sm: '256px' },
               '& .MuiOutlinedInput-root': { 
-                borderRadius: '8px', 
+                borderRadius: '8px',
+                transition: 'box-shadow 0.2s ease-in-out',
+                '&:hover': {
+                  boxShadow: `0 0 2px ${theme.palette.divider}`, 
+                },
                 '& fieldset': {
                   borderColor: theme.palette.divider, 
-                  borderWidth: '1px',
                 },
                 '&:hover fieldset': {
-                  borderColor: theme.palette.secondary.main,
+                  borderColor: theme.palette.divider,
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: theme.palette.secondary.dark,
-                  borderWidth: '2px',
+                  borderColor: theme.palette.primary.main,
                 },
               },
-              '& .MuiInputBase-input': { 
-                color: 'text.primary',
-              },
-              // 4. Fixed placeholder visibility by forcing contrast and opacity
               '& .MuiInputBase-input::placeholder': { 
                 color: theme.palette.text.secondary,
                 opacity: 1, 
@@ -256,29 +238,34 @@ export default function Clients() {
             variant="contained"
             disableElevation
             sx={{
-              // 5. Removed padding on mobile to turn it into a compact icon button
               minWidth: { xs: '40px', sm: 'auto' }, 
-              px: { xs: 0, sm: 3 }, 
+              px: { xs: 1.5, sm: 3 }, 
               height: '40px',
               borderRadius: '8px'
             }}
           >
             <Add />
-            {/* 6. Hid the text on small screens to prevent cramming */}
             <span className="hidden sm:inline-block sm:ml-2">Client</span>
           </Button>
         </div>
       </Box>
 
-      {/* Client List */}
       {clients && clients.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-12 bg-gray-50 dark:bg-gray-800/50 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-700">
-          <Typography variant="h6" className="text-gray-600 dark:text-gray-300 mb-2">
+        <Box sx={{ 
+          p: 3, 
+          bgcolor: theme.palette.background.paper,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          rounded: '3xl',
+          border: `2px dashed ${theme.palette.divider}`
+        }}>
+          <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary' }}>
             No clients yet
           </Typography>
-          <Typography variant="body2" className="text-gray-500 mb-6 text-center max-w-sm">
-            Add your first client to start tracking their progress, schedules, and
-            details.
+          <Typography variant="body2" sx={{ mb: 3, textAlign: 'center', maxWidth: 'sm', color: 'text.secondary' }}>
+            Add your first client to start tracking their progress, schedules, and details.
           </Typography>
           <Button
             onClick={() => setDialogState('add')}
@@ -287,21 +274,35 @@ export default function Clients() {
           >
             Add First Client
           </Button>
-        </div>
+        </Box>
       ) : filteredClients.length === 0 ? (
-        <Typography className="text-center p-8 text-gray-500">
+        <Typography sx={{ textAlign: 'center', p: 8, pt: 18, color: 'text.secondary' }}>
           No clients match your search.
         </Typography>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-20 sm:pt-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-15 sm:pt-1">
           {filteredClients.map((client) => (
             <Link
               key={client.id}
               href={`/clients/${client.id}`}
               className="group block outline-none"
             >
-              <div className="flex items-center justify-between p-5 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/30 active:scale-[0.98]">
-                <div className="flex items-center gap-4">
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                p: 2.5,
+                bgcolor: theme.palette.background.paper,
+                borderRadius: '1rem',
+                border: `1px solid ${theme.palette.divider}`,
+                boxShadow: theme.shadows[1],
+                transition: 'all 0.2s',
+                '&:hover': {
+                  boxShadow: theme.shadows[4],
+                  borderColor: theme.palette.primary.main,
+                }
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Avatar
                     sx={{
                       bgcolor: theme.palette.primary.main,
@@ -314,33 +315,37 @@ export default function Clients() {
                     {getInitials(client.firstName, client.lastName)}
                   </Avatar>
 
-                  <div className="flex flex-col">
+                  <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     <Typography
                       variant="subtitle1"
-                      fontWeight="600"
-                      className="text-gray-900 dark:text-white leading-tight"
+                      sx={{ fontWeight: 600, color: 'text.primary' }}
                     >
                       {client.firstName} {client.lastName}
                     </Typography>
 
-                    <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                      <Phone sx={{ fontSize: 14 }} />
-                      <span>{client.phone}</span>
-                    </div>
-                  </div>
-                </div>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
+                      <Phone sx={{ fontSize: 14, color: 'text.secondary' }} />
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                        {client.phone}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
 
-                {/* Delete Button - prevents navigation on click */}
-                <div className="flex items-center justify-center">
-                  {' '}
-                  {/* Wrapped in a flex-center div */}
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <IconButton
                     size="small"
-                    className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-gray-400! !hover:text-red-600 m-auto"
                     sx={{
+                      opacity: { xs: 1, sm: 0 },
+                      transition: 'opacity 0.2s',
+                      color: 'text.secondary',
                       '&:hover': {
-                        backgroundColor: 'rgba(255, 32, 32, 0.36)', // Tailwind red-50 equivalent
+                        color: 'error.main',
+                        bgcolor: `${theme.palette.error.main}20`,
                       },
+                      '&:group-hover': {
+                        opacity: 1,
+                      }
                     }}
                     onClick={(e) => {
                       e.preventDefault()
@@ -351,27 +356,33 @@ export default function Clients() {
                   >
                     <Delete fontSize="medium" />
                   </IconButton>
-                </div>
-              </div>
+                </Box>
+              </Box>
             </Link>
           ))}
         </div>
       )}
 
-      {/* Unified Dialog Manager */}
       <Dialog
         open={dialogState !== 'closed'}
         onClose={handleCloseDialog}
         maxWidth="sm"
         fullWidth
-        PaperProps={{ className: 'rounded-2xl sm:rounded-3xl' }}
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: '1.5rem',
+              bgcolor: theme.palette.background.paper,
+              color: theme.palette.text.primary
+            }
+          }
+        }}
       >
         {dialogState === 'add' && (
           <form onSubmit={handleAddClient} noValidate>
-            <DialogTitle className="font-bold text-xl pb-2">Add New Client</DialogTitle>
-            <DialogContent dividers className="border-gray-100 dark:border-gray-800">
-              {/* Replaced MUI Grid with responsive Tailwind grid for cleaner code */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <DialogTitle sx={{ fontWeight: 'bold', fontSize: '1.25rem', pb: 1 }}>Add New Client</DialogTitle>
+            <DialogContent dividers sx={{ borderColor: theme.palette.divider }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, pt: 1 }}>
                 <TextField
                   name="fNameInp"
                   label="First Name"
@@ -415,7 +426,7 @@ export default function Clients() {
                   variant="filled"
                   fullWidth
                   disabled={isSubmitting}
-                  className="sm:col-span-2"
+                  sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}
                 />
                 <TextField
                   name="city"
@@ -424,7 +435,7 @@ export default function Clients() {
                   fullWidth
                   disabled={isSubmitting}
                 />
-                <div className="grid grid-cols-2 gap-4">
+                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                   <TextField
                     name="state"
                     label="State"
@@ -439,14 +450,14 @@ export default function Clients() {
                     fullWidth
                     disabled={isSubmitting}
                   />
-                </div>
-              </div>
+                </Box>
+              </Box>
             </DialogContent>
-            <DialogActions sx={{ p: 3, pt: 2 }}>
+            <DialogActions sx={{ p: 2.5, pt: 1.5 }}>
               <Button
                 onClick={handleCloseDialog}
                 disabled={isSubmitting}
-                className="text-gray-500 hover:bg-gray-100"
+                sx={{ color: 'text.secondary' }}
               >
                 Cancel
               </Button>
@@ -455,7 +466,7 @@ export default function Clients() {
                 variant="contained"
                 type="submit"
                 disableElevation
-                className="rounded-lg px-6"
+                sx={{ borderRadius: '0.5rem', px: 3 }}
               >
                 Save Client
               </LoadingButton>
@@ -465,21 +476,21 @@ export default function Clients() {
 
         {dialogState === 'delete' && (
           <>
-            <DialogTitle className="font-bold text-xl pb-2">Delete Client?</DialogTitle>
+            <DialogTitle sx={{ fontWeight: 'bold', fontSize: '1.25rem', pb: 1 }}>Delete Client?</DialogTitle>
             <DialogContent>
-              <Typography className="text-gray-600">
+              <Typography sx={{ color: 'text.secondary' }}>
                 Are you sure you want to delete{' '}
-                <strong className="text-gray-900">
+                <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>
                   {selectedClient?.firstName} {selectedClient?.lastName}
-                </strong>
+                </Box>
                 ? This action cannot be undone and will permanently remove their profile.
               </Typography>
             </DialogContent>
-            <DialogActions sx={{ p: 3, pt: 2 }}>
+            <DialogActions sx={{ p: 2.5, pt: 1.5 }}>
               <Button
                 onClick={handleCloseDialog}
                 disabled={isSubmitting}
-                className="text-gray-500 hover:bg-gray-100"
+                sx={{ color: 'text.secondary' }}
               >
                 Cancel
               </Button>
@@ -489,7 +500,7 @@ export default function Clients() {
                 color="error"
                 disableElevation
                 onClick={handleDeleteClient}
-                className="rounded-lg px-6"
+                sx={{ borderRadius: '0.5rem', px: 3 }}
               >
                 Delete
               </LoadingButton>
@@ -497,6 +508,7 @@ export default function Clients() {
           </>
         )}
       </Dialog>
+
     </div>
   )
 }

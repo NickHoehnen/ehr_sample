@@ -42,7 +42,7 @@ export default function NavCard({ type, href }: CardProps) {
   return (
     <Link href={href} className="block outline-none sm:bg-white">
       <div
-        className="group relative p-3 sm:p-2 flex-1 flex-col sm:flex-row items-center justify-center gap-3 rounded-3xl sm:rounded-none cursor-pointer border border-gray-100 dark:border-gray-800 sm:border-none transition-all duration-300 ease-out pressable hover:shadow-xl hover:shadow-primary/20"
+        className="group relative p-3 sm:p-2 flex-1 flex-col sm:flex-row items-center justify-center gap-3 rounded-2xl sm:rounded-none cursor-pointer border border-gray-100 dark:border-gray-800 sm:border-none transition-all duration-300 ease-out pressable hover:shadow-xl hover:shadow-primary/20"
         style={{
           backgroundColor: bgColor,
           transition: "background-color 0.3s ease",

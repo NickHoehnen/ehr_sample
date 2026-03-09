@@ -51,14 +51,11 @@ export default function ClientView() {
   return (
     <div className="space-y-7">
       {/* Header - back arrow, client name */}
-      <div className="flex flex-row items-center justify-between gap-3 border-b border-gray-200 dark:border-gray-700 pb-4">
-        <IconButton onClick={() => router.back()} color="primary" className='pressable'>
-          <ArrowBack sx={{ fontSize: '2rem' }} />
-        </IconButton>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+      {/* <div className="flex flex-row items-center justify-center gap-3 border-b border-gray-200 dark:border-gray-700 pb-4"> */}
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white pl-3">
           {client.firstName} {client.lastName}
         </h1>
-      </div>
+      {/* </div> */}
 
       {/* Values grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -186,9 +186,9 @@ export default function ScheduleCalendar() {
   };
 
   return (
-    <Box sx={{ width: "100%", maxWidth: 1200, mx: "auto", p: 1, bgcolor: "#0f172a", borderRadius: 4, minHeight: "80vh" }}>
+    <Box sx={{ width: "100%", mx: "auto", p: 1, bgcolor: "#0f172a", borderRadius: 4, minHeight: "80vh" }}>
       {/* Header */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
         <Typography variant="h4" sx={{ color: "white", fontWeight: 800, letterSpacing: "-1px" }}>
           {currentDate.toLocaleString("default", { month: "long" })} <span style={{ color: "#64748b" }}>{year}</span>
         </Typography>

@@ -17,7 +17,7 @@ export default function AuthLayout({
         minHeight: "95vh",
       }}
     >
-      <div className="p-5 bg-gray-300 border border-gray-400 rounded-2xl shadow-2xl w-lg">
+      <div className="p-5 bg-gray-800 border border-gray-600 rounded-2xl shadow-2xl w-lg">
         {children}
       </div>
     </Container>
