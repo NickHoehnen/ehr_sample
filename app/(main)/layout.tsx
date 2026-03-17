@@ -1,122 +1,200 @@
 'use client'
 
-import { useMemo, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Box, CircularProgress, Menu, MenuItem, Typography, useTheme } from '@mui/material'
+import { 
+  Box, 
+  CircularProgress, 
+  Container, 
+  Typography, 
+  useTheme,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Paper
+} from '@mui/material'
 
 import { useAuth } from '@/context/AuthContext'
 import AuthGuard from '../components/AuthGuard'
 import NavCard from '../components/NavCard'
+import UserPill from '../components/UserPill'
+import { ArrowBack } from '@mui/icons-material'
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading, userDoc, logout } = useAuth()
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const theme = useTheme();
-  const pathname = usePathname();
-  const firstPath = pathname.split('/').at(1);
-  const title = `${firstPath?.charAt(0).toUpperCase()}${firstPath?.slice(1)}`
+  const { user, loading } = useAuth()
+  const theme = useTheme()
+  const router = useRouter()
+  const pathname = usePathname()
   
-  const open = Boolean(anchorEl)
-
-  // Memoize display name to avoid recalculation on every pulse/render
-  const displayName = useMemo(() => {
-    const full = `${userDoc?.firstName ?? ''} ${userDoc?.lastName ?? ''}`.trim()
-    return full || user?.email || 'User'
-  }, [userDoc, user?.email])
-
-  const handleOpen = (e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget)
-  const handleClose = () => setAnchorEl(null)
-
-  const handleLogout = () => {
-    handleClose()
-    logout?.()
-  }
+  const firstPath = pathname.split('/').at(1)
+  const title = `${firstPath?.charAt(0).toUpperCase()}${firstPath?.slice(1)}`
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center">
-        {/* Navigation - Top on Desktop, Bottom on Mobile */}
-        <nav className="fixed bottom-0 left-auto sm:top-0 sm:bottom-auto lg:w-7xl lg:rounded-b-2xl px-4 pb-5 pt-1 sm:p-0 w-full grid grid-cols-4 bg-transparent dark:bg-gray-900 border-t sm:border-t-0 sm:border-b border-gray-200 dark:border-gray-800 z-50">
+      {/* Outer Shell */}
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          height: '100%', 
+          width: '100%',
+          position: 'relative' 
+        }}
+      >
+        {/* TOP BAR (This content swaps between mobile & desktop) */}
+        <AppBar
+          position="static" 
+          elevation={0}
+          sx={{
+            bgcolor: 'background.default', 
+            color: 'text.primary',
+            pt: 'env(safe-area-inset-top)', 
+            zIndex: 1200,
+            flexShrink: 0, 
+          }}
+        >
+          {/* MOBILE TOP BAR (Hidden on sm+) */}
+          <Toolbar sx={{ 
+            display: { xs: 'flex', sm: 'none' },
+            minHeight: '3.5rem', 
+            py: 0.5, 
+            px: 2, 
+            gap: 1,
+            width: '100%',
+          }}>
+            <IconButton 
+              edge="start" 
+              color="inherit" 
+              onClick={() => router.back()}
+              disabled={pathname === '/dashboard'}
+            >
+              <ArrowBack />
+            </IconButton>
+
+            <Typography variant="h6" fontWeight="bold">
+              {title}
+            </Typography>
+            
+            <Box sx={{ flexGrow: 1 }} />
+            <UserPill />
+          </Toolbar>
+
+          {/* SM+ Only (Nav buttons + user pill) */}
+          <Toolbar sx={{
+            display: { xs: 'none', sm: 'flex' }, 
+            width: '100%',
+            maxWidth: 'lg',
+            mx: 'auto',
+          }}>
+            {/* Nav Cards Container */}
+            <Box sx={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(4, 1fr)', 
+              width: '100%',
+              maxWidth: '1000px'
+            }}>
+              <NavCard type="Dashboard" href="/dashboard" />
+              <NavCard type="Clients" href="/clients" />
+              <NavCard type="Schedule" href="/schedule" />
+              <NavCard type="Profile" href="/profile" />
+            </Box>
+
+            {/* 3. Right side: User Pill */}
+            <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+              <UserPill />
+            </Box>
+          </Toolbar>
+        </AppBar>
+
+        {/* MAIN SCROLLABLE AREA */}
+        <Box 
+          component="main" 
+          sx={{ 
+            flexGrow: 1, 
+            overflowY: 'auto',
+            WebkitOverflowScrolling: 'touch', 
+            display: 'flex', 
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100%',
+            pb: { xs: 'calc(64px + env(safe-area-inset-bottom))', sm: 3 },
+          }}
+        >
+          <Box sx={{ width: '100%', maxWidth: 'lg', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+            
+            {/* Content Container (The white "Paper" area) */}
+            <Box 
+              sx={{ 
+                flexGrow: 1, 
+                bgcolor: 'background.paper', 
+                borderRadius: { sm: '1rem' },
+                display: 'flex',
+                flexDirection: 'column',
+                px: { xs: 2, sm: 4 }, 
+                py: 1,
+              }}
+            >
+              {/* DESKTOP TITLE BAR: Scrolls with content (Hidden on xs) */}
+              <Box sx={{ 
+                display: { xs: 'none', sm: 'flex' }, 
+                alignItems: 'center', 
+                gap: 1, 
+                borderBottom: '1px solid',
+                borderColor: 'divider',
+                pb: 1,
+                mb: 1,
+              }}>
+                <IconButton 
+                  edge="start" 
+                  color="inherit" 
+                  onClick={() => router.back()}
+                  disabled={pathname === '/dashboard'}
+                >
+                  <ArrowBack />
+                </IconButton>
+                <Typography variant="h5" fontWeight="bold">
+                  {title}
+                </Typography>
+              </Box>
+
+              {loading || !user ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexGrow: 1 }}>
+                  <CircularProgress size={32} thickness={5} />
+                </Box>
+              ) : (
+                <Container disableGutters sx={{ flexGrow: 1, height: '100%' }}> 
+                  {children}
+                </Container>
+              )}
+            </Box>
+          </Box>
+        </Box>
+
+        {/* 3. MOBILE ONLY BOTTOM NAV */}
+        <Paper
+          component="nav"
+          elevation={8}
+          sx={{
+            display: { xs: 'grid', sm: 'none' },
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            bgcolor: 'background.default',
+            pb: 'env(safe-area-inset-bottom)',
+            pt: 1,
+            px: 2,
+            borderTopLeftRadius: '1.5rem',
+            borderTopRightRadius: '1.5rem',
+            zIndex: 1200,
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+          }}
+        >
           <NavCard type="Dashboard" href="/dashboard" />
           <NavCard type="Clients" href="/clients" />
           <NavCard type="Schedule" href="/schedule" />
           <NavCard type="Profile" href="/profile" />
-        </nav>
-
-        {/* User Status Pill */}
-        <div className="fixed top-1.5 sm:bottom-10 md:bottom-15 right-4 z-60 ">
-          <button
-            onClick={handleOpen}
-            className="flex items-center gap-3 px-3 py-1 bg-white/80 dark:bg-green-900/10 backdrop-blur-md border border-green-200 dark:border-green-800/50 active:dark:border-green-600 rounded-full shadow-sm hover:shadow-md transition-all active:scale-95 select-none"
-          >
-            <span className="relative flex h-2.5 w-2.5">
-              {user && (
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-              )}
-              <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${user ? 'bg-green-500' : 'bg-gray-400'}`} />
-            </span>
-            
-            <span className="text-sm font-semibold text-green-900 dark:text-green-400">
-              {displayName}
-            </span>
-          </button>
-
-          <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            slotProps={{
-              paper: {
-                sx: {
-                  mt: 1.5,
-                  borderRadius: '1rem',
-                  minWidth: 180,
-                  boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-                  border: '1px solid #e5e7eb'
-                }
-              }
-            }}
-          >
-            <MenuItem onClick={handleClose} className="text-sm">Profile</MenuItem>
-            <MenuItem onClick={handleClose} className="text-sm">Settings</MenuItem>
-            <hr className="my-1 border-gray-100" />
-            <MenuItem onClick={handleLogout} className="text-sm text-red-600">
-              Logout
-            </MenuItem>
-          </Menu>
-        </div>
-
-        {/* Main Content Area */}
-        <main className="grow flex pt-10 flex-col sm:pt-18 pb-30 sm:pb-0 max-w-7xl mx-auto w-full">
-          <div className="grow bg-black dark:bg-gray-900 rounded-2xl  overflow-hidden">
-            {loading || !user ? (
-              <div className="flex items-center justify-center min-h-100">
-                <CircularProgress size={32} thickness={5} />
-              </div>
-            ) : (
-              // Main content
-              <div className="sm:p-6 p-2">
-                {/* Page title */}
-                <Typography
-                  variant="h4"
-                  fontWeight="bold"
-                  className="fixed top-0 left-0 sm:hidden text-gray-900 dark:text-white w-full px-4 pb-1.5 border-b border-gray-800" // Added sm:top-16
-                  sx={{ 
-                    bgcolor: theme.palette.background.default,
-                    zIndex: '40', // Higher than the nav's 50
-                    color: theme.palette.secondary.light
-                  }}
-                >
-                  {title}
-                </Typography>
-                {children}
-              </div>
-            )}
-          </div>
-        </main>
-      </div>
+        </Paper>
+      </Box>
     </AuthGuard>
   )
 }

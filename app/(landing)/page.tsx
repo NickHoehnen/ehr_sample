@@ -14,10 +14,10 @@ export default function AuthHome() {
         minHeight: "95vh",
       }}
     >
-      <Box className="p-8 bg-gray-300 border border-gray-400 rounded-2xl shadow-2xl w-lg flex flex-col gap-6">
+      <Box className="p-8 border border-gray-400 rounded-2xl shadow-2xl w-lg flex flex-col gap-5">
         <h1 className="text-2xl mb-1">EHR System</h1>
 
-        <Typography variant="body1" className="text-gray-700">
+        <Typography variant="body1">
           Welcome. Please login or create an account to continue.
         </Typography>
 

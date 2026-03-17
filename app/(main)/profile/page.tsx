@@ -1,7 +1,8 @@
 'use client'
 
+import ThemeToggle from '@/app/components/ThemeToggle'
 import { useAuth } from '@/context/AuthContext'
-import { CircularProgress, Typography } from '@mui/material'
+import { Box, CircularProgress, Container, Typography } from '@mui/material'
 
 export default function Profile() {
   const { user, loading, userDoc } = useAuth()
@@ -17,14 +18,15 @@ export default function Profile() {
     )
 
   return (
-    <div>
+    <Box>
       <Typography variant="h3">{fullName}</Typography>
       <Typography variant="body1">{user.email}</Typography>
       <br />
       <div>
         <Typography variant="h4">{userDoc.birdthdate}</Typography>
         <Typography variant="body1">Birthdate</Typography>
+        <ThemeToggle />
       </div>
-    </div>
+    </Box>
   )
 }

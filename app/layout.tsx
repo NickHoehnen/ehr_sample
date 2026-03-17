@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Roboto } from "next/font/google";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 import ThemeRegistry from "./ThemeRegistry";
 import AuthProvider from "@/context/AuthContext";
 import Providers from "./Providers";
+import { Box, GlobalStyles } from "@mui/material";
 
 const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
@@ -22,16 +24,15 @@ export const metadata: Metadata = {
   },
 };
 
-// New way to handle viewports in Next.js
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f9fafb' },
-    { media: '(prefers-color-scheme: dark)', color: '#111827' },
+    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
   ],
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
-  maximumScale: 1, // Prevents auto-zoom on input fields in iOS
-  userScalable: false,
+  maximumScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -42,16 +43,43 @@ export default function RootLayout({
   return (
     <html lang="en" className={roboto.className} suppressHydrationWarning>
       <body className="antialiased">
+        <GlobalStyles
+          styles={{
+            "html, body": {
+              margin: 0,
+              padding: 0,
+              height: "100dvh",
+              width: "100vw",
+              overflow: "hidden", // Locks the root to prevent double-scrolling
+              overscrollBehavior: "none",
+            },
+          }}
+        />
+
         <AuthProvider>
-          <ThemeRegistry>
-            {/* CssBaseline inside ThemeRegistry will handle 
-                the body background color automatically based on mode */}
-            <Providers>
-              <div className="min-h-screen flex flex-col">
-                {children}
-              </div>
-            </Providers>
-          </ThemeRegistry>
+          <NextThemesProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            enableColorScheme
+          >
+            <ThemeRegistry>
+              <Providers>
+                {/* Structural Shell */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100dvh", // Strict dynamic viewport height
+                    width: "100vw",
+                    bgcolor: "background.paper",
+                  }}
+                >
+                  {children}
+                </Box>
+              </Providers>
+            </ThemeRegistry>
+          </NextThemesProvider>
         </AuthProvider>
       </body>
     </html>

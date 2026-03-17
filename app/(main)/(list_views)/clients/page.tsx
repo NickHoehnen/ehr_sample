@@ -16,6 +16,8 @@ import {
   Avatar,
   InputAdornment,
   Box,
+  Stack,
+  alpha,
 } from '@mui/material'
 import { collection, deleteDoc, doc, onSnapshot, query, setDoc } from 'firebase/firestore'
 import { useState, useEffect, useMemo } from 'react'
@@ -157,22 +159,37 @@ export default function Clients() {
 
   if (loading || !user) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh]">
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
         <CircularProgress size={40} thickness={4} />
-      </div>
+      </Box>
     )
   }
 
   return (
-    <div className="w-full mx-auto pt-0 sm:pt-13 flex flex-col gap-6">
+    <Stack spacing={1} sx={{ width: '100%', pt: { xs: 5, sm: 0 } }}>
+      
+      {/* Search Bar */}
       <Box 
-        className="fixed top-15 sm:top-18 px-1 lg:px-[50%] right-0 z-10 w-[70%]"
         sx={{ 
-          bgcolor: theme.palette.background.default,
-          backdropFilter: { xs: 'none', sm: 'blur(8px)' }
+          position: 'fixed',
+          zIndex: 100, 
+          width: '50%',
+          top: { xs: '126px', sm: '70px' }, 
+          right: { sm: 25 },
+          bgcolor: 'transparent',
+          alignSelf: 'flex-start',
+          transition: 'none'
         }}
       >
-        <div className='flex flex-row items-center justify-end gap-2 sm:gap-3 max-w-7xl mx-auto'>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="flex-end"
+          spacing={{ xs: 1, sm: 1.5 }}
+          sx={{ 
+            borderRadius: '10px',
+          }}
+        >
           
           {user && (
             <Avatar 
@@ -209,7 +226,9 @@ export default function Clients() {
               },
             }}
             sx={{
-              width: { xs: '100%', sm: '256px' },
+              backdropFilter: { xs: 'blur(8px)', sm: 'blur(8px)' },
+              borderRadius: '10px',
+              width: '100%',
               '& .MuiOutlinedInput-root': { 
                 borderRadius: '8px',
                 transition: 'box-shadow 0.2s ease-in-out',
@@ -226,10 +245,6 @@ export default function Clients() {
                   borderColor: theme.palette.primary.main,
                 },
               },
-              '& .MuiInputBase-input::placeholder': { 
-                color: theme.palette.text.secondary,
-                opacity: 1, 
-              },
             }}
           />
 
@@ -245,67 +260,81 @@ export default function Clients() {
             }}
           >
             <Add />
-            <span className="hidden sm:inline-block sm:ml-2">Client</span>
+            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline-block' }, ml: 1 }}>
+              Client
+            </Box>
           </Button>
-        </div>
+        </Stack>
       </Box>
 
-      {clients && clients.length === 0 ? (
-        <Box sx={{ 
-          p: 3, 
-          bgcolor: theme.palette.background.paper,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          rounded: '3xl',
-          border: `2px dashed ${theme.palette.divider}`
-        }}>
-          <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary' }}>
-            No clients yet
-          </Typography>
-          <Typography variant="body2" sx={{ mb: 3, textAlign: 'center', maxWidth: 'sm', color: 'text.secondary' }}>
-            Add your first client to start tracking their progress, schedules, and details.
-          </Typography>
-          <Button
-            onClick={() => setDialogState('add')}
-            variant="outlined"
-            startIcon={<Add />}
-          >
-            Add First Client
-          </Button>
-        </Box>
-      ) : filteredClients.length === 0 ? (
-        <Typography sx={{ textAlign: 'center', p: 8, pt: 18, color: 'text.secondary' }}>
-          No clients match your search.
-        </Typography>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-15 sm:pt-1">
-          {filteredClients.map((client) => (
-            <Link
-              key={client.id}
-              href={`/clients/${client.id}`}
-              className="group block outline-none"
+      {/* Main Content (Warnings, then clients list) */}
+      <Box sx={{ width: '100%' }}>
+        {clients && clients.length === 0 ? ( 
+          <Box sx={{ 
+            bgcolor: 'background.paper',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '1.5rem',
+            border: `2px dashed ${theme.palette.divider}`
+          }}>
+            <Typography variant="h6" sx={{ color: 'text.secondary' }}>
+              No clients yet
+            </Typography>
+            <Typography variant="body2" sx={{ textAlign: 'center', maxWidth: 'sm', color: 'text.secondary' }}>
+              Add your first client to start tracking their progress, schedules, and details.
+            </Typography>
+            <Button
+              onClick={() => setDialogState('add')}
+              variant="outlined"
+              startIcon={<Add />}
             >
-              <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                p: 2.5,
-                bgcolor: theme.palette.background.paper,
-                borderRadius: '1rem',
-                border: `1px solid ${theme.palette.divider}`,
-                boxShadow: theme.shadows[1],
-                transition: 'all 0.2s',
-                '&:hover': {
-                  boxShadow: theme.shadows[4],
-                  borderColor: theme.palette.primary.main,
-                }
-              }}>
+              Add First Client
+            </Button>
+          </Box>
+        ) : filteredClients.length === 0 ? (
+          <Typography sx={{ textAlign: 'center', color: 'text.secondary' }}>
+            No clients match your search.
+          </Typography>
+        ) : (
+          // Clients list
+          <Box sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, 
+            gap: 1,
+          }}>
+            {filteredClients.map((client) => (
+              // Client Card
+              <Box
+                key={client.id}
+                component={Link}
+                href={`/clients/${client.id}`}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  borderRadius: '1rem',
+                  border: 1,
+                  p: 1,
+                  borderColor: 'divider',
+                  boxShadow: 1,
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    boxShadow: 4,
+                    borderColor: 'primary.main',
+                    '& .delete-btn': { // Reveal delete button on hover
+                      opacity: 1
+                    }
+                  }
+                }}
+              >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Avatar
                     sx={{
-                      bgcolor: theme.palette.primary.main,
+                      bgcolor: 'primary.main',
                       width: 48,
                       height: 48,
                       fontSize: '1rem',
@@ -316,14 +345,11 @@ export default function Clients() {
                   </Avatar>
 
                   <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                    <Typography
-                      variant="subtitle1"
-                      sx={{ fontWeight: 600, color: 'text.primary' }}
-                    >
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
                       {client.firstName} {client.lastName}
                     </Typography>
 
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       <Phone sx={{ fontSize: 14, color: 'text.secondary' }} />
                       <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                         {client.phone}
@@ -334,6 +360,7 @@ export default function Clients() {
 
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <IconButton
+                    className="delete-btn"
                     size="small"
                     sx={{
                       opacity: { xs: 1, sm: 0 },
@@ -341,11 +368,8 @@ export default function Clients() {
                       color: 'text.secondary',
                       '&:hover': {
                         color: 'error.main',
-                        bgcolor: `${theme.palette.error.main}20`,
+                        bgcolor: alpha(theme.palette.error.main, 0.1),
                       },
-                      '&:group-hover': {
-                        opacity: 1,
-                      }
                     }}
                     onClick={(e) => {
                       e.preventDefault()
@@ -358,10 +382,10 @@ export default function Clients() {
                   </IconButton>
                 </Box>
               </Box>
-            </Link>
-          ))}
-        </div>
-      )}
+            ))}
+          </Box>
+        )}
+      </Box>
 
       <Dialog
         open={dialogState !== 'closed'}
@@ -372,17 +396,17 @@ export default function Clients() {
           paper: {
             sx: {
               borderRadius: '1.5rem',
-              bgcolor: theme.palette.background.paper,
-              color: theme.palette.text.primary
+              bgcolor: 'background.paper',
+              color: 'text.primary'
             }
           }
         }}
       >
         {dialogState === 'add' && (
           <form onSubmit={handleAddClient} noValidate>
-            <DialogTitle sx={{ fontWeight: 'bold', fontSize: '1.25rem', pb: 1 }}>Add New Client</DialogTitle>
-            <DialogContent dividers sx={{ borderColor: theme.palette.divider }}>
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, pt: 1 }}>
+            <DialogTitle sx={{ fontWeight: 'bold', fontSize: '1.25rem' }}>Add New Client</DialogTitle>
+            <DialogContent dividers sx={{ borderColor: 'divider' }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
                 <TextField
                   name="fNameInp"
                   label="First Name"
@@ -453,7 +477,7 @@ export default function Clients() {
                 </Box>
               </Box>
             </DialogContent>
-            <DialogActions sx={{ p: 2.5, pt: 1.5 }}>
+            <DialogActions sx={{ p: 1.5 }}>
               <Button
                 onClick={handleCloseDialog}
                 disabled={isSubmitting}
@@ -476,7 +500,7 @@ export default function Clients() {
 
         {dialogState === 'delete' && (
           <>
-            <DialogTitle sx={{ fontWeight: 'bold', fontSize: '1.25rem', pb: 1 }}>Delete Client?</DialogTitle>
+            <DialogTitle sx={{ fontWeight: 'bold', fontSize: '1.25rem' }}>Delete Client?</DialogTitle>
             <DialogContent>
               <Typography sx={{ color: 'text.secondary' }}>
                 Are you sure you want to delete{' '}
@@ -486,7 +510,7 @@ export default function Clients() {
                 ? This action cannot be undone and will permanently remove their profile.
               </Typography>
             </DialogContent>
-            <DialogActions sx={{ p: 2.5, pt: 1.5 }}>
+            <DialogActions sx={{ p: 0 }}>
               <Button
                 onClick={handleCloseDialog}
                 disabled={isSubmitting}
@@ -508,7 +532,6 @@ export default function Clients() {
           </>
         )}
       </Dialog>
-
-    </div>
+    </Stack>
   )
 }

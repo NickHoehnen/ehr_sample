@@ -135,90 +135,99 @@ export default function Signup() {
   }
 
   return (
-    <div>
-      <form className="flex flex-col gap-6" onSubmit={onSubmit}>
-        <h1 className="text-2xl mb-1">Sign Up</h1>
+    // Removed the unnecessary wrapper div to match the Login page structure
+    <form className="flex flex-col gap-6" onSubmit={onSubmit}>
+      {/* 1. Replaced native h1 with Typography */}
+      <Typography variant="h5" component="h1" fontWeight="medium">
+        Sign Up
+      </Typography>
 
-        <TextField
-          name="email"
-          label="Email"
-          variant="filled"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
+      <TextField
+        name="email"
+        label="Email"
+        variant="filled"
+        value={formData.email}
+        onChange={handleChange}
+        required
+      />
 
-        <TextField
-          name="password"
-          label="Password"
-          type="password"
-          variant="filled"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
+      <TextField
+        name="password"
+        label="Password"
+        type="password"
+        variant="filled"
+        value={formData.password}
+        onChange={handleChange}
+        required
+      />
 
-        <TextField
-          name="confirmPassword"
-          label="Confirm Password"
-          type="password"
-          variant="filled"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          required
-        />
+      <TextField
+        name="confirmPassword"
+        label="Confirm Password"
+        type="password"
+        variant="filled"
+        value={formData.confirmPassword}
+        onChange={handleChange}
+        required
+      />
 
-        <TextField
-          name="firstName"
-          label="First Name"
-          variant="filled"
-          value={formData.firstName}
-          onChange={handleChange}
-          required
-        />
+      <TextField
+        name="firstName"
+        label="First Name"
+        variant="filled"
+        value={formData.firstName}
+        onChange={handleChange}
+        required
+      />
 
-        <TextField
-          name="lastName"
-          label="Last Name"
-          variant="filled"
-          value={formData.lastName}
-          onChange={handleChange}
-          required
-        />
+      <TextField
+        name="lastName"
+        label="Last Name"
+        variant="filled"
+        value={formData.lastName}
+        onChange={handleChange}
+        required
+      />
 
-        <TextField
-          name="phone"
-          label="Phone"
-          variant="filled"
-          value={formData.phone}
-          onChange={handleChange}
-        />
+      <TextField
+        name="phone"
+        label="Phone"
+        variant="filled"
+        value={formData.phone}
+        onChange={handleChange}
+      />
 
-        <DatePicker
-          label="Birthdate"
-          value={formData.birthdate}
-          onChange={handleBirthdateChange}
-          className="bg-[rgb(195,195,195)]"
-        />
+      {/* 2. Removed the Tailwind class and passed the filled variant via slotProps */}
+      <DatePicker
+        label="Birthdate"
+        value={formData.birthdate}
+        onChange={handleBirthdateChange}
+        slotProps={{
+          textField: {
+            variant: "filled"
+          }
+        }}
+      />
 
-        <Button
-          type="submit"
-          variant="contained"
-          size="large"
-          disabled={loading}
-        >
-          {loading ? "Signing up..." : "Sign Up"}
-        </Button>
-        <Link href="/login" className="text-center">
-          <Button size="small">Login to existing account</Button>
-        </Link>
+      <Button
+        type="submit"
+        variant="contained"
+        size="large"
+        disabled={loading}
+      >
+        {loading ? "Signing up..." : "Sign Up"}
+      </Button>
+      
+      <Link href="/login" className="text-center">
+        {/* 3. Added type="button" to prevent accidental form submission */}
+        <Button size="small" type="button">Login to existing account</Button>
+      </Link>
 
-        {error && (
-          <Alert sx={{ scale: 1.05 }} severity="warning">
-            <span className="font-medium">{error}</span>
-          </Alert>
-        )}
-      </form>
-    </div>
+      {error && (
+        <Alert sx={{ scale: 1.05 }} severity="warning">
+          <span className="font-medium">{error}</span>
+        </Alert>
+      )}
+    </form>
   );
 }

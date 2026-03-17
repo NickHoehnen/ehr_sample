@@ -63,7 +63,9 @@ export default function Login() {
 
   return (
     <form className="flex flex-col gap-6" onSubmit={onSubmit}>
-      <h1 className="text-2xl mb-1">Login</h1>
+      <Typography variant="h5" component="h1" fontWeight="medium">
+        Login
+      </Typography>
 
       <TextField
         name="email"
@@ -93,7 +95,7 @@ export default function Login() {
       <div className="flex items-center gap-2">
         <Typography variant="body1">Don't have an account?</Typography>
         <Link href="/signup" className="text-center">
-          <Button size="small">Create new account</Button>
+          <Button size="small" type="button">Create new account</Button>
         </Link>
       </div>
 

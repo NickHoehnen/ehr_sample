@@ -1,6 +1,5 @@
-// (auth) Layout
-
-import { Container } from "@mui/material";
+'use client'
+import { Box, Paper } from "@mui/material";
 
 export default function AuthLayout({
   children,
@@ -8,18 +7,27 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Container
-      maxWidth="lg"
+    <Box
       sx={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        minHeight: "95vh",
+        minHeight: "100dvh",
+        p: 2,
+        bgcolor: 'background.default',
       }}
     >
-      <div className="p-5 bg-gray-800 border border-gray-600 rounded-2xl shadow-2xl w-lg">
+      <Paper 
+        elevation={12} 
+        sx={{ 
+          p: 3, 
+          borderRadius: 3, 
+          width: '100%', 
+          maxWidth: '450px',
+        }}
+      >
         {children}
-      </div>
-    </Container>
+      </Paper>
+    </Box>
   );
 }

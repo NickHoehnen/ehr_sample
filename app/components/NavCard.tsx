@@ -6,60 +6,76 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import { ReactElement } from "react";
 import Link from "next/link";
-import { useTheme } from "@mui/material/styles";
-import { Typography } from "@mui/material";
+import { Box, Typography, alpha } from "@mui/material";
 import { usePathname } from "next/navigation";
 
-// Restricting type to exact strings prevents accidental typos when using the component
+// Restricting type to exact strings prevents accidental typos
 type CardProps = {
   type: "Clients" | "Profile" | "Schedule" | "Dashboard";
   href: string;
 };
 
 export default function NavCard({ type, href }: CardProps) {
-  const theme = useTheme();
-  const primaryColor = theme.palette.primary.main;
   const pathname = usePathname();
   const isActive = pathname === href;
 
-  const bgColor = isActive ? primaryColor : theme.palette.background.paper;
-  const contentColor = isActive ? "#ffffff" : primaryColor;
-  const textColor = isActive ? "#ffffff" : theme.palette.text.primary;
-
-  const iconStyle = {
-    fontSize: 30,
-    color: contentColor,
-    transition: "color 0.3s ease",
-  };
-
   const icons: Record<string, ReactElement> = {
-    Clients: <PeopleAltIcon sx={iconStyle} />,
-    Profile: <AccountBoxIcon sx={iconStyle} />,
-    Schedule: <CalendarMonthIcon sx={iconStyle} />,
-    Dashboard: <DashboardIcon sx={iconStyle} />,
+    Clients: <PeopleAltIcon fontSize="large" />,
+    Profile: <AccountBoxIcon fontSize="large" />,
+    Schedule: <CalendarMonthIcon fontSize="large" />,
+    Dashboard: <DashboardIcon fontSize="large" />,
   };
 
   return (
-    <Link href={href} className="block outline-none sm:bg-white">
-      <div
-        className="group relative p-3 sm:p-2 flex-1 flex-col sm:flex-row items-center justify-center gap-3 rounded-2xl sm:rounded-none cursor-pointer border border-gray-100 dark:border-gray-800 sm:border-none transition-all duration-300 ease-out pressable hover:shadow-xl hover:shadow-primary/20"
-        style={{
-          backgroundColor: bgColor,
-          transition: "background-color 0.3s ease",
+    <Box
+      component={Link}
+      href={href}
+      className="pressable"
+      sx={{
+        display: "flex",
+        flexDirection: { xs: "column", sm: "row" },
+        alignItems: "center",
+        justifyContent: "center",
+        gap: { xs: 0.5, sm: 1.5 },
+        p: { xs: 1, sm: 1.5 },
+        textDecoration: "none",
+        borderRadius: { xs: "1rem", sm: 0 },
+        transition: "all 0.2s ease-in-out",
+        userSelect: "none",
+        bgcolor: isActive ? "primary.main" : "transparent",
+        color: isActive ? "primary.contrastText" : "text.secondary",
+        
+        "&:hover": {
+          bgcolor: isActive ? "primary.dark" : "action.hover",
+          color: { sm: isActive ? "primary.contrastText" : "primary.main", xs: "primary.main" },
+          
+          "& .nav-icon": {
+            transform: "translateY(-2px)",
+          },
+        },
+      }}
+    >
+      <Box 
+        className="nav-icon" 
+        sx={{ 
+          display: "flex", 
+          transition: "transform 0.2s ease-out",
+          color: "inherit" 
         }}
       >
-        <div className="transition-transform duration-300 ease-out group-hover:-translate-y-1">
-          {icons[type]}
-        </div>
+        {icons[type]}
+      </Box>
 
-        <Typography
-          variant="subtitle1"
-          fontWeight="600"
-          style={{ color: textColor, transition: "color 0.3s ease" }}
-        >
-          {type}
-        </Typography>
-      </div>
-    </Link>
+      <Typography
+        variant="subtitle2"
+        sx={{ 
+          fontWeight: 600, 
+          color: "inherit",
+          display: { xs: "none", sm: "block" } 
+        }}
+      >
+        {type}
+      </Typography>
+    </Box>
   );
 }

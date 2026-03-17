@@ -1,19 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import {
   Box,
   Typography,
   IconButton,
-  Paper,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
   Button,
+  useTheme,
+  alpha,
 } from "@mui/material";
 
 interface CalendarEvent {
@@ -21,192 +22,96 @@ interface CalendarEvent {
   title: string;
   date: Date;
   description: string;
-  color?: string; // Added for variety
+  color?: string;
 }
 
 export default function ScheduleCalendar() {
+  const theme = useTheme();
   const [currentDate, setCurrentDate] = useState(new Date());
-
   const [events, setEvents] = useState<CalendarEvent[]>([
-    {
-      id: "1",
-      title: "Team Meeting",
-      date: new Date(),
-      description: "Discuss project milestones.",
-      color: "#00f2fe",
-    },
-    {
-      id: "3",
-      title: "Design Review",
-      date: new Date(),
-      description: "Approve new mockups.",
-      color: "#89f7fe",
-    },
-    {
-      id: "2",
-      title: "Doctor Appointment",
-      date: new Date(new Date().setDate(new Date().getDate() + 2)),
-      description: "Routine checkup.",
-      color: "#f093fb",
-    },
+    { id: "1", title: "Team Meeting", date: new Date(), description: "Discuss project milestones.", color: "#00f2fe" },
+    { id: "3", title: "Design Review", date: new Date(), description: "Approve new mockups.", color: "#89f7fe" },
+    { id: "2", title: "Doctor Appointment", date: new Date(new Date().setDate(new Date().getDate() + 2)), description: "Routine checkup.", color: "#f093fb" },
   ]);
 
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  // --- Date Math ---
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const firstDayOfMonth = new Date(year, month, 1).getDay();
-  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const handlePrevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const handleNextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
-
   const handleEventClick = (event: CalendarEvent) => {
     setSelectedEvent(event);
     setIsDialogOpen(true);
   };
 
-  const renderCells = () => {
+  // --- Logic Separation: Generate Calendar Data Array ---
+  const calendarCells = useMemo(() => {
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
     const cells = [];
-    // Empty slots before the 1st of the month
+
+    // Empty padding days before the 1st
     for (let i = 0; i < firstDayOfMonth; i++) {
-      cells.push(
-        <Box 
-          key={`empty-${i}`} 
-          sx={{ p: 1, minHeight: { xs: 80, sm: 120 }, border: "1px solid transparent" }} 
-        />
-      );
+      cells.push({ type: "empty", id: `empty-${i}` });
     }
 
-    // Days of the month
+    // Actual days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       const cellDate = new Date(year, month, day);
       const isToday = new Date().toDateString() === cellDate.toDateString();
-      const dayEvents = events.filter(
-        (e) => e.date.toDateString() === cellDate.toDateString(),
-      );
-
-      cells.push(
-        <Box
-          key={`day-${day}`}
-          sx={{
-            p: { xs: 0.5, sm: 1.5 },
-            minHeight: { xs: 80, sm: 120 },
-            display: "flex",
-            flexDirection: "column",
-            gap: 1,
-            borderRadius: { xs: "8px", sm: "12px" },
-            border: "1px solid",
-            borderColor: isToday ? "primary.main" : "rgba(255, 255, 255, 0.1)",
-            background: isToday
-              ? "linear-gradient(145deg, rgba(25, 118, 210, 0.05), rgba(25, 118, 210, 0.15))"
-              : "transparent",
-            boxShadow: isToday ? "0 0 5px rgba(25, 118, 210, 0.3)" : "none",
-            transition: "all 0.3s ease",
-            "&:hover": {
-              borderColor: "primary.light",
-              boxShadow: "0 0 8px rgba(25, 118, 210, 0.2)",
-              transform: "translateY(-2px)",
-              bgcolor: "rgba(255, 255, 255, 0.02)",
-            },
-          }}
-        >
-          <Typography
-            variant="caption"
-            sx={{
-              fontWeight: isToday ? 800 : 400,
-              color: isToday ? "primary.main" : "grey.300",
-              textAlign: "right",
-              fontSize: { xs: "0.65rem", sm: "0.75rem" }
-            }}
-          >
-            {day}
-          </Typography>
-
-          {/* Event Container: Row on mobile, Column on desktop */}
-          <Box 
-            sx={{ 
-              display: "flex", 
-              flexDirection: { xs: "row", sm: "column" }, 
-              flexWrap: "wrap",
-              gap: 0.5,
-              mt: "auto" // Pushes the dots to the bottom on mobile
-            }}
-          >
-            {/* Day events */}
-            {dayEvents.map((event) => (
-              <Box
-                key={event.id}
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevents clicking the cell if you add cell-click logic later
-                  handleEventClick(event);
-                }}
-                sx={{
-                  cursor: "pointer",
-                  transition: "transform 0.2s",
-                  
-                  // MOBILE STYLES: 24x24 Circular Dot
-                  width: { xs: 20, sm: "auto" },
-                  height: { xs: 20, sm: "auto" },
-                  borderRadius: { xs: "50%", sm: "0px" },
-                  bgcolor: { xs: event.color || "primary.main", sm: "transparent" },
-                  
-                  // DESKTOP STYLES: Border Accent
-                  borderLeft: { xs: "none", sm: `3px solid ${event.color || "#1976d2"}` },
-                  px: { xs: 0, sm: 0.5 },
-                  
-                  "&:hover": {
-                    transform: { xs: "scale(1.2)", sm: "translateX(4px)" },
-                  },
-                }}
-              >
-                {/* Text is hidden on mobile, visible on desktop */}
-                <Typography
-                  variant="caption"
-                  
-                  sx={{
-                    display: { xs: "none", sm: "block" },
-                    fontWeight: "bold",
-                    color: event.color || "primary.main",
-                    lineHeight: 1.2,
-                    fontSize: "0.75rem",
-                  }}
-                >
-                  {event.title}
-                </Typography>
-              </Box>
-            ))}
-          </Box>
-        </Box>,
-      );
+      const dayEvents = events.filter((e) => e.date.toDateString() === cellDate.toDateString());
+      
+      cells.push({ type: "day", id: `day-${day}`, day, isToday, dayEvents });
     }
+
     return cells;
-  };
+  }, [year, month, events]);
 
   return (
-    <Box sx={{ width: "100%", mx: "auto", p: 1, bgcolor: "#0f172a", borderRadius: 4, minHeight: "80vh" }}>
+    // Outer Box: Fills parent container, drops the hardcoded heights/colors
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%", width: "100%" }}>
+      
       {/* Header */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <Typography variant="h4" sx={{ color: "white", fontWeight: 800, letterSpacing: "-1px" }}>
-          {currentDate.toLocaleString("default", { month: "long" })} <span style={{ color: "#64748b" }}>{year}</span>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3, pt: 1 }}>
+        <Typography variant="h5" sx={{ fontWeight: 800 }}>
+          {currentDate.toLocaleString("default", { month: "long" })}
+          <Box component="span" sx={{ color: "text.secondary", ml: 1, fontWeight: 500 }}>
+            {year}
+          </Box>
         </Typography>
-        
-        <Box sx={{ display: 'flex', gap: 1, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: '12px', p: 0.5 }}>
-            <IconButton onClick={handlePrevMonth} sx={{ color: "white" }}>
+
+        {/* Action Buttons using theme dividers and alpha */}
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            gap: 1, 
+            bgcolor: alpha(theme.palette.text.primary, 0.05), 
+            borderRadius: 2, 
+            p: 0.5,
+          }}
+        >
+          <IconButton onClick={handlePrevMonth} aria-label="Previous Month">
             <ChevronLeftIcon />
-            </IconButton>
-            <IconButton onClick={handleNextMonth} sx={{ color: "white" }}>
+          </IconButton>
+          <IconButton onClick={handleNextMonth} aria-label="Next Month">
             <ChevronRightIcon />
-            </IconButton>
+          </IconButton>
         </Box>
       </Box>
 
-      {/* Days of Week */}
-      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", mb: 2 }}>
-        {daysOfWeek.map((day) => (
-          <Typography key={day} align="center" sx={{ color: "grey.600", fontWeight: 700, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: 1.5 }}>
+      {/* Days of Week Text */}
+      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", mb: 1 }}>
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+          <Typography 
+            key={day} 
+            align="center" 
+            variant="caption"
+            sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}
+          >
             {day}
           </Typography>
         ))}
@@ -217,35 +122,128 @@ export default function ScheduleCalendar() {
         sx={{ 
           display: "grid", 
           gridTemplateColumns: "repeat(7, 1fr)", 
-          gap: { xs: 0.5, sm: 1.5 } 
+          gap: { xs: 0.5, sm: 1 },
+          flexGrow: 1 // Allows the grid to stretch to the bottom of the App Shell
         }}
       >
-        {renderCells()}
+        {calendarCells.map((cell) => {
+          if (cell.type === "empty") {
+            return <Box key={cell.id} sx={{ minHeight: { xs: 80, sm: 120 } }} />;
+          }
+
+          return (
+            <Box
+              key={cell.id}
+              sx={{
+                p: { xs: 0.5, sm: 1 },
+                minHeight: { xs: 80, sm: 120 },
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+                borderRadius: 1,
+                border: "1px solid",
+                // Dynamic border based on theme divider
+                borderColor: cell.isToday ? "primary.main" : "divider",
+                // Using MUI alpha for clean, theme-aware translucency
+                bgcolor: cell.isToday ? alpha(theme.palette.primary.main, 0.05) : "background.paper",
+                boxShadow: cell.isToday ? `0 0 10px ${alpha(theme.palette.primary.main, 0.2)}` : "none",
+                transition: "all 0.2s ease-in-out",
+                "&:hover": {
+                  borderColor: cell.isToday ? "primary.main" : "text.secondary",
+                  transform: "translateY(-2px)",
+                },
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: cell.isToday ? 800 : 500,
+                  color: cell.isToday ? "primary.main" : "text.secondary",
+                  textAlign: "right",
+                  fontSize: { xs: "0.65rem", sm: "0.75rem" }
+                }}
+              >
+                {cell.day}
+              </Typography>
+
+              {/* Event Container */}
+              <Box 
+                sx={{ 
+                  display: "flex", 
+                  flexDirection: { xs: "row", sm: "column" }, 
+                  flexWrap: "wrap",
+                  gap: 0.5,
+                  mt: "auto" 
+                }}
+              >
+                {cell.dayEvents?.map((event) => (
+                  <Box
+                    key={event.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEventClick(event);
+                    }}
+                    sx={{
+                      cursor: "pointer",
+                      width: { xs: 8, sm: "100%" }, // Slightly smaller dots on mobile for a cleaner look
+                      height: { xs: 8, sm: "auto" },
+                      borderRadius: { xs: "50%", sm: 1 },
+                      bgcolor: { xs: event.color || "primary.main", sm: alpha(event.color || theme.palette.primary.main, 0.1) },
+                      borderLeft: { xs: "none", sm: `3px solid ${event.color || theme.palette.primary.main}` },
+                      px: { xs: 0, sm: 0.5 },
+                      py: { xs: 0, sm: 0.25 },
+                      "&:hover": {
+                        bgcolor: { sm: alpha(event.color || theme.palette.primary.main, 0.2) }
+                      },
+                    }}
+                  >
+                    <Typography
+                      // noWrap // Prevents long text from breaking the grid
+                      sx={{
+                        display: { xs: "none", sm: "block" },
+                        fontWeight: 600,
+                        color: event.color || "primary.main",
+                        fontSize: "0.7rem",
+                      }}
+                    >
+                      {event.title}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          );
+        })}
       </Box>
 
-      {/* Modernized Dialog */}
+      {/* Dialog */}
       <Dialog 
         open={isDialogOpen} 
         onClose={() => setIsDialogOpen(false)}
-        PaperProps={{
-            sx: { borderRadius: '20px', padding: 1, bgcolor: '#1e293b', color: 'white' }
-        }}
+        fullWidth
+        maxWidth="sm"
+        // Let the ThemeRegistry handle the standard border radius for Paper/Dialogs
       >
         <DialogTitle sx={{ fontWeight: 800 }}>{selectedEvent?.title}</DialogTitle>
         <DialogContent>
-          <Typography sx={{ color: '#94a3b8', mb: 2 }}>{selectedEvent?.description}</Typography>
+          <Typography sx={{ color: 'text.secondary', mb: 3, mt: 1 }}>
+            {selectedEvent?.description}
+          </Typography>
           <TextField
             fullWidth
-            variant="filled"
-            label="Title"
+            variant="outlined" // Outlined usually plays nicer with automatic light/dark theming than filled
+            label="Event Title"
             value={selectedEvent?.title || ""}
-            sx={{ input: { color: 'white' }, mb: 2 }}
             onChange={(e) => setSelectedEvent(p => p ? {...p, title: e.target.value} : null)}
           />
         </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button onClick={() => setIsDialogOpen(false)} sx={{ color: '#94a3b8' }}>Cancel</Button>
-          <Button variant="contained" sx={{ borderRadius: '10px', px: 4 }} onClick={() => setIsDialogOpen(false)}>Save</Button>
+        <DialogActions sx={{ p: 2, px: 3 }}>
+          <Button onClick={() => setIsDialogOpen(false)} color="inherit" sx={{ color: 'text.secondary' }}>
+            Cancel
+          </Button>
+          <Button variant="contained" onClick={() => setIsDialogOpen(false)} disableElevation>
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
