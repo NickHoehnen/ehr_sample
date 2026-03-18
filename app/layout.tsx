@@ -1,78 +1,55 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { Roboto } from "next/font/google";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import ThemeRegistry from "./ThemeRegistry";
 import AuthProvider from "@/context/AuthContext";
 import Providers from "./Providers";
-import { Box, GlobalStyles } from "@mui/material";
-
-const roboto = Roboto({
-  weight: ["300", "400", "500", "700"],
-  subsets: ["latin"],
-  display: "swap",
-});
+import { Box } from "@mui/material";
 
 export const metadata: Metadata = {
-  title: "EHR Sample1",
-  description: "Manage your business1",
+  title: "EHR App",
+  description: "Manage your business",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    title: "EHR Sample",
+    title: "EHR",
     statusBarStyle: "black-translucent",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
-  ],
+  themeColor: "#0f172a",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  viewportFit: "cover",
+  userScalable: false,
+  viewportFit: "cover", // Tells iOS to ignore safe areas at the root level
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={roboto.className} suppressHydrationWarning>
-      <body className="antialiased">
-        <GlobalStyles
-          styles={{
-            "html, body": {
-              margin: 0,
-              padding: 0,
-              height: "100dvh",
-              width: "100vw",
-              overflow: "hidden", // Locks the root to prevent double-scrolling
-              overscrollBehavior: "none",
-            },
-          }}
-        />
-
+    <html lang="en" suppressHydrationWarning>
+      <body>
         <AuthProvider>
-          <NextThemesProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            enableColorScheme
-          >
+          <NextThemesProvider attribute="class" defaultTheme="system" enableSystem>
             <ThemeRegistry>
               <Providers>
-                {/* Structural Shell */}
+                {/* THE APP SHELL
+                  This Box maps perfectly to the screen edges. 
+                  Login screens, dashboard, everything sits inside this.
+                */}
                 <Box
                   sx={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
                     display: "flex",
                     flexDirection: "column",
-                    height: "100dvh", // Strict dynamic viewport height
-                    width: "100vw",
-                    bgcolor: "background.paper",
+                    bgcolor: "background.default",
+                    color: "text.primary",
+                    overflow: "hidden", // Never let this root container scroll
                   }}
                 >
                   {children}

@@ -169,12 +169,9 @@ export default function ThemeRegistry({ children }: { children: React.ReactNode 
     [isDarkMode, themeDev] // Updated dependency array
   );
 
-  // Note: To prevent a flash of unstyled content during SSR, we render the children immediately,
-  // but the MUI theme will update once the client mounts.
   return (
     <CacheProvider value={cache}>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
         {children}
       </ThemeProvider>
     </CacheProvider>
