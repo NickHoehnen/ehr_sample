@@ -48,7 +48,7 @@ export default function RootLayout({
             "html, body": {
               margin: 0,
               padding: 0,
-              height: "100dvh",
+              height: "100%",
               width: "100vw",
               overflow: "hidden", // Locks the root to prevent double-scrolling
               overscrollBehavior: "none",
@@ -70,7 +70,11 @@ export default function RootLayout({
                   sx={{
                     display: "flex",
                     flexDirection: "column",
-                    height: "100dvh", // Strict dynamic viewport height
+                    position: "fixed",
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
                     width: "100vw",
                     bgcolor: "background.paper",
                   }}

@@ -34,7 +34,7 @@
   body {
     margin: 0;
     padding: 0;
-    height: 100dvh; /* Synced with RootLayout dynamic viewport height */
+    height: 100%; /* Synced with RootLayout dynamic viewport height */
     background-color: var(--background);
     color: var(--foreground);
     /* font-family intentionally left blank to let Next.js Roboto take over */
