@@ -38,7 +38,6 @@ export default function UserPill() {
     <Box 
       sx={{ 
         position: 'fixed',
-        transform: {xs: 'translateY(0px)', sm: 'none'},
         top: { xs: `calc(env(safe-area-inset-top) + ${theme.spacing(1.4)})`, sm: 'auto' }, 
         bottom: { xs: 'auto', sm: theme.spacing(4) }, 
         right: { xs: theme.spacing(2), sm: theme.spacing(4) }, 
@@ -51,7 +50,7 @@ export default function UserPill() {
           alignItems: 'center',
           gap: 1.5,
           px: 1.5,
-          py: 0.75,
+          py: 0.5,
           bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.success.main, 0.1) : alpha(theme.palette.background.paper, 0.8),
           backdropFilter: 'blur(12px)',
           border: 1,

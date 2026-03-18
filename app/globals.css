@@ -26,11 +26,6 @@
   }
 }
 
-
-body {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
 /* ------------------------------------------------------------
    Base Layer
 ------------------------------------------------------------ */
@@ -39,16 +34,12 @@ body {
   body {
     margin: 0;
     padding: 0;
-    height: 100%;
+    height: 100dvh; /* Synced with RootLayout dynamic viewport height */
     background-color: var(--background);
     color: var(--foreground);
-    font-family: Arial, Helvetica, sans-serif;
+    /* font-family intentionally left blank to let Next.js Roboto take over */
     -webkit-font-smoothing: antialiased;
     overscroll-behavior: none;
-  }
-
-  body {
-    padding-bottom: env(safe-area-inset-bottom);
   }
 
   button {

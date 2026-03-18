@@ -13,11 +13,11 @@ import {
   CircularProgress,
   Typography,
   useTheme,
-  Avatar,
   InputAdornment,
   Box,
   Stack,
   alpha,
+  Avatar,
 } from '@mui/material'
 import { collection, deleteDoc, doc, onSnapshot, query, setDoc } from 'firebase/firestore'
 import { useState, useEffect, useMemo } from 'react'
@@ -166,105 +166,85 @@ export default function Clients() {
   }
 
   return (
-    <Stack spacing={1} sx={{ width: '100%', pt: { xs: 5, sm: 0 } }}>
+    <Stack spacing={2} sx={{ width: '100%' }}>
       
-      {/* Search Bar */}
+      {/* Search Bar & Action Row */}
       <Box 
         sx={{ 
-          position: 'fixed',
-          zIndex: 100, 
-          width: '50%',
-          top: { xs: '126px', sm: '70px' }, 
-          right: { sm: 25 },
-          bgcolor: 'transparent',
-          alignSelf: 'flex-start',
-          transition: 'none'
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          gap: 1.5,
+          position: 'sticky', // Sticks to the top of the content container as you scroll
+          top: { xs: '.5rem', sm: '1rem' },
+          zIndex: 10,
+          width: { xs: '100%', sm: 'fit-content' },
+          bgcolor: 'transparent', // Masks content scrolling underneath
         }}
       >
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="flex-end"
-          spacing={{ xs: 1, sm: 1.5 }}
-          sx={{ 
+        <TextField
+          size="small"
+          placeholder="Search clients..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search sx={{ color: 'text.secondary' }} />
+                </InputAdornment>
+              ),
+              endAdornment: searchQuery && (
+                <InputAdornment position="end">
+                  <IconButton size="small" onClick={() => setSearchQuery('')} edge="end">
+                    <Clear fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              )
+            },
+          }}
+          sx={{
+            backdropFilter: 'blur(12px)',
+            width: '100%',
             borderRadius: '10px',
+            boxShadow: '-1px 3px 5px 1px rgba(0, 0, 0, 0.4)',
+            maxWidth: '400px', // Prevents it from looking awkwardly long on ultrawide monitors
+            '& .MuiOutlinedInput-root': { 
+              borderRadius: '8px',
+              transition: 'box-shadow 0.2s ease-in-out',
+              '&:hover': {
+                boxShadow: `0 0 2px ${theme.palette.divider}`, 
+              },
+              '& fieldset': {
+                borderColor: theme.palette.divider, 
+              },
+              '&:hover fieldset': {
+                borderColor: theme.palette.divider,
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+              },
+            },
+          }}
+        />
+
+        <Button
+          onClick={() => setDialogState('add')}
+          variant="contained"
+          disableElevation
+          sx={{
+            minWidth: { xs: '40px', sm: 'auto' }, 
+            px: { xs: 1.5, sm: 3 }, 
+            height: '40px',
+            borderRadius: '8px',
+            flexShrink: 0, // Prevents the button from being squished by the search bar
           }}
         >
-          
-          {user && (
-            <Avatar 
-              sx={{ 
-                width: 40, 
-                height: 40, 
-                bgcolor: theme.palette.secondary.main,
-                display: { xs: 'none', md: 'flex' }
-              }}
-            >
-              {user.displayName ? getInitials(user.displayName.split(' ')[0], user.displayName.split(' ')[1] || '') : 'TR'}
-            </Avatar>
-          )}
-
-          <TextField
-            size="small"
-            placeholder="Search clients..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search sx={{ color: 'text.secondary' }} />
-                  </InputAdornment>
-                ),
-                endAdornment: searchQuery && (
-                  <InputAdornment position="end">
-                    <IconButton size="small" onClick={() => setSearchQuery('')} edge="end">
-                      <Clear fontSize="small" />
-                    </IconButton>
-                  </InputAdornment>
-                )
-              },
-            }}
-            sx={{
-              backdropFilter: { xs: 'blur(8px)', sm: 'blur(8px)' },
-              borderRadius: '10px',
-              width: '100%',
-              '& .MuiOutlinedInput-root': { 
-                borderRadius: '8px',
-                transition: 'box-shadow 0.2s ease-in-out',
-                '&:hover': {
-                  boxShadow: `0 0 2px ${theme.palette.divider}`, 
-                },
-                '& fieldset': {
-                  borderColor: theme.palette.divider, 
-                },
-                '&:hover fieldset': {
-                  borderColor: theme.palette.divider,
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: theme.palette.primary.main,
-                },
-              },
-            }}
-          />
-
-          <Button
-            onClick={() => setDialogState('add')}
-            variant="contained"
-            disableElevation
-            sx={{
-              minWidth: { xs: '40px', sm: 'auto' }, 
-              px: { xs: 1.5, sm: 3 }, 
-              height: '40px',
-              borderRadius: '8px'
-            }}
-          >
-            <Add />
-            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline-block' }, ml: 1 }}>
-              Client
-            </Box>
-          </Button>
-        </Stack>
+          <Add />
+          <Box component="span" sx={{ display: { xs: 'none', sm: 'inline-block' }, ml: 1 }}>
+            Client
+          </Box>
+        </Button>
       </Box>
 
       {/* Main Content (Warnings, then clients list) */}
@@ -276,13 +256,14 @@ export default function Clients() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
+            p: 4,
             borderRadius: '1.5rem',
             border: `2px dashed ${theme.palette.divider}`
           }}>
-            <Typography variant="h6" sx={{ color: 'text.secondary' }}>
+            <Typography variant="h6" sx={{ color: 'text.secondary', mb: 1 }}>
               No clients yet
             </Typography>
-            <Typography variant="body2" sx={{ textAlign: 'center', maxWidth: 'sm', color: 'text.secondary' }}>
+            <Typography variant="body2" sx={{ textAlign: 'center', maxWidth: 'sm', color: 'text.secondary', mb: 3 }}>
               Add your first client to start tracking their progress, schedules, and details.
             </Typography>
             <Button
@@ -294,7 +275,7 @@ export default function Clients() {
             </Button>
           </Box>
         ) : filteredClients.length === 0 ? (
-          <Typography sx={{ textAlign: 'center', color: 'text.secondary' }}>
+          <Typography sx={{ textAlign: 'center', color: 'text.secondary', mt: 4 }}>
             No clients match your search.
           </Typography>
         ) : (
@@ -302,7 +283,7 @@ export default function Clients() {
           <Box sx={{ 
             display: 'grid', 
             gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, 
-            gap: 1,
+            gap: 2,
           }}>
             {filteredClients.map((client) => (
               // Client Card
@@ -316,7 +297,7 @@ export default function Clients() {
                   justifyContent: 'space-between',
                   borderRadius: '1rem',
                   border: 1,
-                  p: 1,
+                  p: 2,
                   borderColor: 'divider',
                   boxShadow: 1,
                   textDecoration: 'none',
@@ -325,7 +306,7 @@ export default function Clients() {
                   '&:hover': {
                     boxShadow: 4,
                     borderColor: 'primary.main',
-                    '& .delete-btn': { // Reveal delete button on hover
+                    '& .delete-btn': { 
                       opacity: 1
                     }
                   }
@@ -387,6 +368,7 @@ export default function Clients() {
         )}
       </Box>
 
+      {/* DIALOGS */}
       <Dialog
         open={dialogState !== 'closed'}
         onClose={handleCloseDialog}
@@ -406,7 +388,7 @@ export default function Clients() {
           <form onSubmit={handleAddClient} noValidate>
             <DialogTitle sx={{ fontWeight: 'bold', fontSize: '1.25rem' }}>Add New Client</DialogTitle>
             <DialogContent dividers sx={{ borderColor: 'divider' }}>
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, pt: 1 }}>
                 <TextField
                   name="fNameInp"
                   label="First Name"
@@ -450,7 +432,7 @@ export default function Clients() {
                   variant="filled"
                   fullWidth
                   disabled={isSubmitting}
-                  sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}
+                  sx={{ gridColumn: { xs: 'span 1', sm: 'span 2' } }} // Fixed grid spanning
                 />
                 <TextField
                   name="city"
@@ -459,7 +441,7 @@ export default function Clients() {
                   fullWidth
                   disabled={isSubmitting}
                 />
-                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, gridColumn: { xs: 'span 1', sm: 'span 1' } }}>
                   <TextField
                     name="state"
                     label="State"
@@ -477,7 +459,7 @@ export default function Clients() {
                 </Box>
               </Box>
             </DialogContent>
-            <DialogActions sx={{ p: 1.5 }}>
+            <DialogActions sx={{ p: 2 }}>
               <Button
                 onClick={handleCloseDialog}
                 disabled={isSubmitting}
@@ -510,7 +492,7 @@ export default function Clients() {
                 ? This action cannot be undone and will permanently remove their profile.
               </Typography>
             </DialogContent>
-            <DialogActions sx={{ p: 0 }}>
+            <DialogActions sx={{ p: 2, pt: 0 }}>
               <Button
                 onClick={handleCloseDialog}
                 disabled={isSubmitting}
