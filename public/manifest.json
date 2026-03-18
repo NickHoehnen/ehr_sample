@@ -4,8 +4,8 @@
   "description": "Manage your business",
   "start_url": "/",
   "display": "standalone",
+  "theme_color": "#0d1b2a", 
   "background_color": "#0d1b2a",
-  "theme_color": "#1976d2",
   "icons": [
     {
       "src": "/appIcon-192.png",
